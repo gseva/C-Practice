@@ -1,3 +1,7 @@
+/*
+  Autor: Gseva
+  Fecha: 02.04.2014
+*/
 
 #ifndef GLOBAL_GUARD
 #define GLOBAL_GUARD

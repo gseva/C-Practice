@@ -1,5 +1,5 @@
 /*
-  Autor: Gavrilov Vsevolod
+  Autor: Gseva
   Fecha: 02.04.2014
 
   Tipo de dato abstracto Tarea con sus primitivas.
