@@ -19,15 +19,15 @@
 
 void printTask(TDA_Task* task) {
   char* tags = malloc(255);
-  printf("identificador: %s\n", task->id);
+  printf("identificador: %s\n", getTaskId(task));
   printf("asignado a: %s\n", task->assignee.name);
-  printf("tarea: %s\n", task->name);
-  printf("creada: %s\n", task->createdAt);
-  printf("ultima modificacion: %s\n", task->modifiedAt);
-  printf("notas: %s\n", task->notes);
-  printf("completada: %s\n", getBoolString(task->completed));
-  printf("fecha finalizacion: %s\n", task->completedAt);
-  printf("fecha estimada: %s\n", task->dueOn);
+  printf("tarea: %s\n", getTaskName(task));
+  printf("creada: %s\n", getTaskCreationDate(task));
+  printf("ultima modificacion: %s\n", getTaskModificationDate(task));
+  printf("notas: %s\n", getTaskNotes(task));
+  printf("completada: %s\n", getBoolString(getTaskCompleted(task)));
+  printf("fecha finalizacion: %s\n", getTaskCompletionDate(task));
+  printf("fecha estimada: %s\n", getTaskDueDate(task));
   getTaskTagNames(task, &tags);
   printf("tags: %s\n", tags);
 }

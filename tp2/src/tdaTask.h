@@ -34,7 +34,9 @@ typedef struct {
   NamedObject projects[5];
   NamedObject tags[10];
 
-  int tagsCount;
+  int _followersCount;
+  int _projectsCount;
+  int _tagsCount;
 
 } TDA_Task;
 
@@ -44,12 +46,18 @@ int createTask(TDA_Task* task, char* path);
 int handleKey(TDA_Task* task, char** key, char** content);
 
 
+int readNamedObject(char** content, char** key, NamedObject* obj);
+
 int setNamedObjectId(NamedObject* o, char* name);
+char* getNamedObjectId(NamedObject* o);
+
 int setNamedObjectName(NamedObject* o, char* id);
+char* getNamedObjectName(NamedObject* o);
+
+int copyNamedObject(NamedObject* a, NamedObject* b);
 
 
 int initializeTask(TDA_Task* task);
-
 
 int setTaskId(TDA_Task* task, char* id);
 char* getTaskId(TDA_Task* task);
@@ -59,6 +67,12 @@ char* getTaskName(TDA_Task* task);
 
 int setTaskNotes(TDA_Task* task, char* notes);
 char* getTaskNotes(TDA_Task* task);
+
+int setTaskParent(TDA_Task* task, char* parent);
+char* getTaskParent(TDA_Task* task);
+
+int setTaskAssigneeStatus(TDA_Task* task, char* assigneeStatus);
+char* getTaskAssigneeStatus(TDA_Task* task);
 
 int setTaskCreationDate(TDA_Task* task, char* date);
 char* getTaskCreationDate(TDA_Task* task);
@@ -73,7 +87,7 @@ int setTaskDueDate(TDA_Task* task, char* date);
 char* getTaskDueDate(TDA_Task* task);
 
 int setTaskCompleted(TDA_Task* task, bool completed);
-char* getTaskCompleted(TDA_Task* task);
+bool getTaskCompleted(TDA_Task* task);
 
 int setTaskAssignee(TDA_Task* task, NamedObject* asignee);
 int getTaskAssignee(TDA_Task* task, NamedObject* asignee);
@@ -82,11 +96,20 @@ int setTaskWorkspace(TDA_Task* task, NamedObject* workspace);
 int getTaskWorkspace(TDA_Task* task, NamedObject* workspace);
 
 int addTaskTag(TDA_Task* task, NamedObject* tag);
+int getTaskTag(TDA_Task* task, NamedObject* tag, int index);
+int getTaskTagsCount(TDA_Task* task);
+
+int addTaskFollower(TDA_Task* task, NamedObject* follower);
+int getTaskFollower(TDA_Task* task, NamedObject* follower, int index);
+int getTaskFollowersCount(TDA_Task* task);
+
+int addTaskProject(TDA_Task* task, NamedObject* project);
+int getTaskProject(TDA_Task* task, NamedObject* project, int index);
+int getTaskProjectsCount(TDA_Task* task);
 
 
+// Returns "Si" or "No" depending on bool value
 char* getBoolString(bool b);
 
+// Joins task names with ", "
 int getTaskTagNames(TDA_Task* task, char** value);
-
-
-int readNamedObject(char** content, char** key, NamedObject* obj);
