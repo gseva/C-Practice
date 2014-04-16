@@ -54,13 +54,19 @@ int readString(char** str, char** value) {
 }
 
 
-int readNull(char** str, char** value) {
+int readField(char** str, char** value) {
+  char c = readUntil(str, " ,", value);
+  if (c == ' ') {
+    c = match(str, ",");
+  }
+  return c;
+}
+
+
+int getNull(char** str, char** value) {
   char c = *(*str + ptr-- - 1);
-  if (c == 'n') c = readUntil(str, " ,", value);
+  if (c == 'n') c = readField(str, value);
   if (strcmp(*value, "null") == 0) {
-    if (c == ' ') {
-      c = match(str, ",");
-    }
     return c;
   }
   return -1;
@@ -72,10 +78,7 @@ int getBool(char** str, char** value) {
   c = match(str, "tf");
   if (c > -1) {
     ptr--;
-    c = readUntil(str, " ,", value);
-    if (c == ' ') {
-      c = match(str, ",");
-    }
+    c = readField(str, value);
   }
   if (c > -1) {
     if (strcmp(*value, "true") == 0) {
@@ -95,9 +98,7 @@ int getInt(char** str, char** value) {
   c = match(str, "1234567890");
   if (c == -1) return -1;
   ptr--;
-  c = readUntil(str, " ,", value);
-  if (c != ',')
-    c = match(str, ",");
+  c = readField(str, value);
   return c;
 }
 
@@ -114,9 +115,19 @@ int getDate(char** str, char** value) {
 int getString(char** str, char** value) {
   int out = -1;
   out = readString(str, value);
-  if (out == -1) return readNull(str, value);
+  if (out == -1) return getNull(str, value);
   out = match(str, ",");
   return out;
+}
+
+
+int skipUntil(char** str, char* chrs) {
+  char c;
+  do {
+    c = *(*str + ptr++);
+    if (strchr(chrs, c)) break;
+  } while(c);
+  return c;
 }
 
 
@@ -128,15 +139,22 @@ int skipField(char** str) {
     if (c == chrs[i]) {
       if (c != ',') closedBrackets++;
       i--;
+
     } else if (c == '{') {
       openBrackets++;
       chrs[++i] = '}';
+
     } else if (c == '[') {
       openBrackets++;
       chrs[++i] = ']';
+
     } else if (c == '}' || c == ']') {
       closedBrackets++;
+
+    } else if (c == '"') {
+      if (skipUntil(str, "\"") < 0) return -1;
     }
+
     c = *(*str + ++ptr);
     if (closedBrackets == openBrackets) return 0;
   }
