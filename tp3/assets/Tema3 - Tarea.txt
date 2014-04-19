@@ -1,0 +1,75 @@
+Archivo task.json
+
+{
+    "data": {
+        "assignee": {
+            "id": 5433797777104, 
+            "name": "Jonathan M. Perrotta"
+        }, 
+        "assignee_status": "inbox", 
+        "completed": false, 
+        "completed_at": null, 
+        "created_at": "2014-03-25T16:01:40.104Z", 
+        "due_on": null, 
+        "followers": [
+            {
+                "id": 5433797777104, 
+                "name": "Jonathan M. Perrotta"
+            }
+        ], 
+        "id": 11183691543068, 
+        "modified_at": "2014-03-25T16:02:22.498Z", 
+        "name": "Entrega de .zip en Jarvis", 
+        "notes": "Entrega en jarvis del TP", 
+        "parent": null, 
+        "projects": [
+            {
+                "id": 11183691543028, 
+                "name": "TP2-Algo2"
+            }
+        ], 
+        "tags": [
+            {
+                "id": 11183691543057, 
+                "name": "Integrales"
+            }, 
+            {
+                "id": 11183691543070, 
+                "name": "Cierre"
+            }
+        ], 
+        "workspace": {
+            "id": 7632425754180, 
+            "name": "FIUBA"
+        }
+    }
+}
+
+Queremos un TDA_Task con la siguiente información
+
+- Identificador
+- Miembro asignado (identificador de miembro y nombre)
+- Nombre de la tarea
+- Fecha de creación
+- Fecha de última modificación
+- Notas
+- Completada (puede ser true/false)
+- Fecha de finalización (si no esta la tarea completada, establecer con null)
+- Fecha estimada de finalizacion (si no fue establecida, establecer con null)
+- Etiquetas (tags), con su identificador y nombre (asumir un maximo de 10 etiquetas por tarea)
+
+
+Una vez hecha la llamada al programa, la salida esperada será la siguiente:
+
+identificador: 11183691543068
+asignado a: Jonathan M. Perrotta
+tarea: Entrega de .zip en Jarvis
+creada: 2014-03-25
+ultima modificacion: 2014-03-25
+notas: Entrega en jarvis del TP
+completada: No
+fecha finalizacion: null
+fecha estimada: null
+tags: Integrales, Cierre
+
+

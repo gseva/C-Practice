@@ -124,7 +124,7 @@ int getString(char** str, char** value) {
 int skipUntil(char** str, char* chrs) {
   char c;
   do {
-    c = *(*str + ptr++);
+    c = *(*str + ++ptr);
     if (strchr(chrs, c)) break;
   } while(c);
   return c;

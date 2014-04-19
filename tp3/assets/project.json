@@ -1,0 +1,36 @@
+{
+    "data": {
+        "archived": false, 
+        "color": null, 
+        "created_at": "2014-03-25T15:33:43.229Z", 
+        "followers": [
+            {
+                "id": 1575570855118, 
+                "name": "Anibal Lovaglio"
+            }, 
+            {
+                "id": 5433797777104, 
+                "name": "Jonathan M. Perrotta"
+            }
+        ], 
+        "id": 11183691543028, 
+        "members": [
+            {
+                "id": 5433797777104, 
+                "name": "Jonathan M. Perrotta"
+            }, 
+            {
+                "id": 1575570855118, 
+                "name": "Anibal Lovaglio"
+            }
+        ], 
+        "modified_at": "2014-03-25T16:07:59.989Z", 
+        "name": "TP2-Algo2", 
+        "notes": "", 
+        "public": true, 
+        "workspace": {
+            "id": 7632425754180, 
+            "name": "FIUBA"
+        }
+    }
+}

@@ -1,0 +1,73 @@
+Archivo projectdetail.json
+
+{
+    "data": [
+        {
+            "id": 11183691543030, 
+            "name": "Sprint 1:"
+        }, 
+        {
+            "id": 11183691543041, 
+            "name": "Lectura del articulo sobre JSON"
+        }, 
+        {
+            "id": 11183691543044, 
+            "name": "Lectura del articulo sobre Parsers"
+        }, 
+        {
+            "id": 11183691543032, 
+            "name": "Prueba de lectura de archivos"
+        }, 
+        {
+            "id": 11183691543037, 
+            "name": "Prueba de uso de strtok"
+        }, 
+        {
+            "id": 11183691543048, 
+            "name": "Sprint 2:"
+        }, 
+        {
+            "id": 11183691543050, 
+            "name": "Creaci\u00f3n de proyecto en Code::Blocks"
+        }, 
+        {
+            "id": 11183691543055, 
+            "name": "Creaci\u00f3n del TDA correspondiente"
+        }, 
+        {
+            "id": 11183691543060, 
+            "name": "Lectura de archivo Json y carga de TDA"
+        }, 
+        {
+            "id": 11183691543063, 
+            "name": "Escritura por pantalla con formato esperado"
+        }, 
+        {
+            "id": 11183691543068, 
+            "name": "Entrega de .zip en Jarvis"
+        }
+    ]
+}
+
+
+Queremos un TDA_ProjectDetail con la siguiente información
+
+- Tareas, (se puede asumir un maximo de 50 tareas) cada tarea con nombre, identificador y sprint al que pertenece, por ejemplo:
+	identificador: 11183691543068, 
+	nombre: "Entrega de .zip en Jarvis"
+	sprint: "Sprint 2"
+Cada tarea pertenece a un sprint, que son las tareas que finalizan con el caracter dos puntos (":")
+por ejemplo la tarea "Sprint 2:" engloba las tareas con identificadores 11183691543050, 11183691543055, 11183691543060, 11183691543063,
+11183691543068, siempre el listado de tareas empieza con un sprint y sus tareas finalizan cuando se encuentra el sprint siguiente.
+Para cualquier tarea que se lea, se puede obtener su sprint tan solo leyendo en orden inverso hasta encontrar un sprint.
+- Cantidad total de tareas
+- Cantidad total de sprints
+
+Una vez hecha la llamada al programa, la salida esperada será la siguiente:
+
+tareas: 9
+sprints: 2
+Sprint 1: 11183691543041, 11183691543044, 11183691543032, 11183691543037
+Sprint 2: 11183691543050, 11183691543055, 11183691543060, 11183691543063, 11183691543068
+
+

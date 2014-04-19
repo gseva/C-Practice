@@ -1,5 +1,5 @@
 /*
-  Autor: Gavrilov Vsevolod
+  Autor: Gseva
   Fecha: 23.03.2014
 
   Programa que ordena alfabeticamente la entrada.
