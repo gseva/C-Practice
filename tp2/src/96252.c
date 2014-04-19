@@ -18,9 +18,10 @@
 
 
 void printTask(TDA_Task* task) {
-  char* tags = malloc(255);
+  char* tags = malloc(255); NamedObject* n = malloc(sizeof(NamedObject));
   printf("identificador: %s\n", getTaskId(task));
-  printf("asignado a: %s\n", task->assignee.name);
+  getTaskAssignee(task, n);
+  printf("asignado a: %s\n", getNamedObjectName(n));
   printf("tarea: %s\n", getTaskName(task));
   printf("creada: %s\n", getTaskCreationDate(task));
   printf("ultima modificacion: %s\n", getTaskModificationDate(task));
