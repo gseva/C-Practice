@@ -33,6 +33,12 @@ int copyNamedObject(NamedObject* to, NamedObject* from) {
   return 0;
 }
 
+int createNamedObject(NamedObject* o, char* id, char* name) {
+  setNamedObjectId(o, id);
+  setNamedObjectName(o, name);
+  return 0;
+}
+
 
 int initializeTask(TDA_Task* task) {
   task->_followersCount = 0;
@@ -141,25 +147,33 @@ bool getTaskCompleted(TDA_Task* task) {
 }
 
 
-int setTaskAssignee(TDA_Task* task, NamedObject* assignee) {
-  copyNamedObject(&(task->assignee), assignee);
+int setTaskAssignee(TDA_Task* task, char* id, char* name) {
+  NamedObject n; createNamedObject(&n, id, name); task->assignee = n;
   return 0;
 }
 
-int getTaskAssignee(TDA_Task* task, NamedObject* assignee) {
-  copyNamedObject(assignee, &(task->assignee));
+char* getTaskAssigneeId(TDA_Task* task) {
+  return getNamedObjectId(&(task->assignee));
+}
+
+char* getTaskAssigneeName(TDA_Task* task) {
+  return getNamedObjectName(&(task->assignee));
+}
+
+
+int setTaskWorkspace(TDA_Task* task, char* id, char* name) {
+  NamedObject n; createNamedObject(&n, id, name); task->workspace = n;
   return 0;
 }
 
-int setTaskWorkspace(TDA_Task* task, NamedObject* workspace) {
-  copyNamedObject(&(task->workspace), workspace);
-  return 0;
+char* getTaskWorkspaceId(TDA_Task* task) {
+  return getNamedObjectId(&(task->workspace));
 }
 
-int getTaskWorkspace(TDA_Task* task, NamedObject* workspace) {
-  copyNamedObject(workspace, &(task->workspace));
-  return 0;
+char* getTaskWorkspaceName(TDA_Task* task) {
+  return getNamedObjectName(&(task->workspace));
 }
+
 
 int addTaskTag(TDA_Task* task, NamedObject* tag) {
   copyNamedObject(&(task->tags)[task->_tagsCount++], tag);
@@ -283,7 +297,7 @@ int handleKey(TDA_Task* task, char** key, char** content) {
   } else if (strcmp(*key, "assignee") == 0) {
     NamedObject n;
     out = readNamedObject(content, key, &n);
-    setTaskAssignee(task, &n);
+    setTaskAssignee(task, n.id, n.name);
 
   } else if (strcmp(*key, "id") == 0) {
     out = getInt(content, key);

@@ -7,7 +7,9 @@
 
 #include "parser.h"
 
-
+/**
+ * Private structure
+ */
 typedef struct {
   char id[255];
   char name[255];
@@ -46,15 +48,15 @@ int createTask(TDA_Task* task, char* path);
 int handleKey(TDA_Task* task, char** key, char** content);
 
 
-int readNamedObject(char** content, char** key, NamedObject* obj);
+// int readNamedObject(char** content, char** key, NamedObject* obj);
 
-int setNamedObjectId(NamedObject* o, char* name);
-char* getNamedObjectId(NamedObject* o);
+// int setNamedObjectId(NamedObject* o, char* name);
+// char* getNamedObjectId(NamedObject* o);
 
-int setNamedObjectName(NamedObject* o, char* id);
-char* getNamedObjectName(NamedObject* o);
+// int setNamedObjectName(NamedObject* o, char* id);
+// char* getNamedObjectName(NamedObject* o);
 
-int copyNamedObject(NamedObject* a, NamedObject* b);
+// int copyNamedObject(NamedObject* a, NamedObject* b);
 
 
 int initializeTask(TDA_Task* task);
@@ -89,13 +91,15 @@ char* getTaskDueDate(TDA_Task* task);
 int setTaskCompleted(TDA_Task* task, bool completed);
 bool getTaskCompleted(TDA_Task* task);
 
-int setTaskAssignee(TDA_Task* task, NamedObject* asignee);
-int getTaskAssignee(TDA_Task* task, NamedObject* asignee);
+int setTaskAssignee(TDA_Task* task, char* id, char* name);
+char* getTaskAssigneeId(TDA_Task* task);
+char* getTaskAssigneeName(TDA_Task* task);
 
-int setTaskWorkspace(TDA_Task* task, NamedObject* workspace);
-int getTaskWorkspace(TDA_Task* task, NamedObject* workspace);
+int setTaskWorkspace(TDA_Task* task, char* id, char* name);
+char* getTaskWorkspaceId(TDA_Task* task);
+char* getTaskWorkspaceName(TDA_Task* task);
 
-int addTaskTag(TDA_Task* task, NamedObject* tag);
+int addTaskTag(TDA_Task* task, NamedObject* follower);
 int getTaskTag(TDA_Task* task, NamedObject* tag, int index);
 int getTaskTagsCount(TDA_Task* task);
 
