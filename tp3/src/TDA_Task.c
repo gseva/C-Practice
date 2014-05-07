@@ -7,6 +7,7 @@
 #include "TDA_Task.h"
 
 
+
 int setNamedObjectId(NamedObject* o, char* id) {
   strcpy(o->id, id);
   return 0;
@@ -175,70 +176,69 @@ char* getTaskWorkspaceName(TDA_Task* task) {
 }
 
 
-int addTaskTag(TDA_Task* task, NamedObject* tag) {
-  copyNamedObject(&(task->tags)[task->_tagsCount++], tag);
+int addTaskTag(TDA_Task* task, char* id, char* name) {
+  NamedObject n; createNamedObject(&n, id, name);
+  copyNamedObject(&(task->tags)[task->_tagsCount++], &n);
   return 0;
 }
 
-int getTaskTag(TDA_Task* task, NamedObject* tag, int index) {
-  copyNamedObject(tag, &(task->tags)[index]);
-  return 0;
+char* getTaskTagId(TDA_Task* task, int index) {
+  return getNamedObjectId(&(task->tags)[index]);
+}
+
+char* getTaskTagName(TDA_Task* task, int index) {
+  return getNamedObjectName(&(task->tags)[index]);
 }
 
 int getTaskTagsCount(TDA_Task* task) {
   return task->_tagsCount;
 }
 
-int addTaskFollower(TDA_Task* task, NamedObject* follower) {
-  copyNamedObject(&(task->followers)[task->_followersCount++], follower);
+
+int addTaskFollower(TDA_Task* task, char* id, char* name) {
+  NamedObject n; createNamedObject(&n, id, name);
+  copyNamedObject(&(task->followers)[task->_followersCount++], &n);
   return 0;
 }
-
-int getTaskFollower(TDA_Task* task, NamedObject* follower, int index) {
-  copyNamedObject(follower, &(task->followers)[index]);
-  return 0;
+char* getTaskFollowerId(TDA_Task* task, int index) {
+  return getNamedObjectId(&(task->followers)[index]);
 }
-
+char* getTaskFollowerName(TDA_Task* task, int index) {
+  return getNamedObjectName(&(task->followers)[index]);
+}
 int getTaskFollowersCount(TDA_Task* task) {
   return task->_followersCount;
 }
 
 
-int addTaskProject(TDA_Task* task, NamedObject* project) {
-  copyNamedObject(&(task->projects)[task->_projectsCount++], project);
+int addTaskProject(TDA_Task* task, char* id, char* name) {
+  NamedObject n; createNamedObject(&n, id, name);
+  copyNamedObject(&(task->projects)[task->_projectsCount++], &n);
   return 0;
 }
-
-int getTaskProject(TDA_Task* task, NamedObject* project, int index) {
-  copyNamedObject(project, &(task->projects)[index]);
-  return 0;
+char* getTaskProjectId(TDA_Task* task, int index) {
+  return getNamedObjectId(&(task->projects)[index]);
 }
-
+char* getTaskProjectName(TDA_Task* task, int index) {
+  return getNamedObjectName(&(task->projects)[index]);
+}
 int getTaskProjectsCount(TDA_Task* task) {
   return task->_projectsCount;
 }
 
 
-char* getBoolString(bool b) {
-  return b ? "Si" : "No";
-}
-
-
 int getTaskTagNames(TDA_Task* task, char** value) {
-  char out[255]; int i; NamedObject* aux = malloc(sizeof(NamedObject));
+  char out[255]; int i;
   if (task->_tagsCount > 0) {
-    getTaskTag(task, aux, 0);
-    strcpy(out, getNamedObjectName(aux));
+    strcpy(out,  getTaskTagName(task, 0));
     for(i = 1; i < getTaskTagsCount(task); i++) {
       strcat(out, ", ");
-      getTaskTag(task, aux, i);
-      strcat(out, getNamedObjectName(aux));
+      strcat(out, getTaskTagName(task, i));
     }
     strcpy(*value, out);
   } else {
     strcpy(*value, "No hay tags");
   }
-  free(aux);
   return 0;
 }
 
@@ -246,7 +246,7 @@ int getTaskTagNames(TDA_Task* task, char** value) {
 int readNamedObject(char** content, char** key, NamedObject* obj) {
   int out; int count = 0;
   out = match(content, "{");
-  openBrackets++;
+  incOpenBrackets();
   while(out > -1) {
     out = parse(content, key);
     if (out > -1) {
@@ -264,7 +264,7 @@ int readNamedObject(char** content, char** key, NamedObject* obj) {
       if (count == 2) { // 2 attributes set
         out = match(content, "}");
         if (out > -1) {
-          closedBrackets++;
+          incClosedBrackets();
           out = match(content, ",]");
           return out;
         }
@@ -280,13 +280,11 @@ int handleKey(TDA_Task* task, char** key, char** content) {
 
   if (strcmp(*key, "data") == 0) {
     match(content, "{");
-    openBrackets++;
+    incOpenBrackets();
     out = parse(content, key);
     while (out > -1) {
       out = handleKey(task, key, content);
-      if (!out) { // out == 0, Stop condition
-        return out;
-      } else if (out < 0) {
+      if (out <= 0) { // out == 0, Stop condition
         return out;
       } else {
         out = parse(content, key);
@@ -337,7 +335,7 @@ int handleKey(TDA_Task* task, char** key, char** content) {
     while(out > -1 && out != ']') {
       NamedObject n;
       out = readNamedObject(content, key, &n);
-      addTaskTag(task, &n);
+      addTaskTag(task, n.id, n.name);
     }
     out = match(content, ",");
 
@@ -375,4 +373,21 @@ int createTask(TDA_Task* task, char* path) {
   free(value);
 
   return out;
+}
+
+
+void printTask(TDA_Task* task) {
+  char* tags = malloc(255);
+  printf("identificador: %s\n", getTaskId(task));
+  printf("asignado a: %s\n", getTaskAssigneeName(task));
+  printf("tarea: %s\n", getTaskName(task));
+  printf("creada: %s\n", getTaskCreationDate(task));
+  printf("ultima modificacion: %s\n", getTaskModificationDate(task));
+  printf("notas: %s\n", getTaskNotes(task));
+  printf("completada: %s\n", bool2str(getTaskCompleted(task)));
+  printf("fecha finalizacion: %s\n", getTaskCompletionDate(task));
+  printf("fecha estimada: %s\n", getTaskDueDate(task));
+  getTaskTagNames(task, &tags);
+  printf("tags: %s\n", tags);
+  free(tags);
 }

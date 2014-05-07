@@ -14,6 +14,11 @@ int openBrackets = 0;
 int closedBrackets = 0;
 
 
+void incPtr() {ptr++;}
+void incOpenBrackets() {openBrackets++;}
+void incClosedBrackets() {closedBrackets++;}
+
+
 char match(char** str, char* chrs) {
   char c = -1;
   while(c) {
