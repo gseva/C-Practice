@@ -45,21 +45,15 @@
   } TDA_Task;
 
 
+  /**
+   * Fills task with data from file on path.
+   *
+   * PRE: Task has enough memory.
+   * POST: Returns 0 if Task is successfully created, !0 otherwise.
+   */
   int createTask(TDA_Task* task, char* path);
 
   int handleKey(TDA_Task* task, char** key, char** content);
-
-
-  // int readNamedObject(char** content, char** key, NamedObject* obj);
-
-  // int setNamedObjectId(NamedObject* o, char* name);
-  // char* getNamedObjectId(NamedObject* o);
-
-  // int setNamedObjectName(NamedObject* o, char* id);
-  // char* getNamedObjectName(NamedObject* o);
-
-  // int copyNamedObject(NamedObject* a, NamedObject* b);
-
 
   int initializeTask(TDA_Task* task);
 
@@ -116,9 +110,6 @@
   char* getTaskProjectName(TDA_Task* task, int index);
   int getTaskProjectsCount(TDA_Task* task);
 
-
-  // Returns "Si" or "No" depending on bool value
-  char* getBoolString(bool b);
 
   // Joins task names with ", "
   int getTaskTagNames(TDA_Task* task, char** value);

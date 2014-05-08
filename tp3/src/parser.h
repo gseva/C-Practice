@@ -25,17 +25,17 @@
    * Reads from str starting from pointer into value until reaching any character
    * from chrs. Returns reached character or -1 in case of error.
    *
-   * Preconditions: str is a valid json structure, position in str is appointed by ptr.
-   * Postconditions: returns last read character otherwise or -1 if fails.
+   * Pre: str is a valid json structure, position in str is appointed by ptr.
+   * Post: returns last read character otherwise or -1 if fails.
    */
   char readUntil(char** str, char* chrs, char** value);
 
   /*
    * Reads from str starting from pointer a json string into value. Can be null.
    *
-   * Preconditions: str is a valid json structure, position in str is appointed by ptr
+   * Pre: str is a valid json structure, position in str is appointed by ptr
    *                at the start of a valid json string.
-   * Postconditions: returns last read character otherwise or -1 if fails.
+   * Post: returns last read character otherwise or -1 if fails.
    */
   int readString(char** str, char** value);
 
