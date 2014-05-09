@@ -362,6 +362,8 @@ int createTask(TDA_Task* task, char* path) {
 
   initializeTask(task);
 
+  initializeParser();
+
   do {
     out = parse(&content, &value);
     if (out > -1) out = handleKey(task, &value, &content);

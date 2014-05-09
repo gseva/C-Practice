@@ -18,6 +18,11 @@ void incPtr() {ptr++;}
 void incOpenBrackets() {openBrackets++;}
 void incClosedBrackets() {closedBrackets++;}
 
+int initializeParser() {
+  ptr = openBrackets = closedBrackets = 0;
+  return 0;
+}
+
 
 char match(char** str, char* chrs) {
   char c = -1;

@@ -5,8 +5,31 @@
 #include "TDA_ProjectReport.h"
 
 
+// Ejemplo de uso de lista
+void prueba(AsanaClient* client, ProjectReport* report) {
+  TDA_Task t; char* taskIds[5];
+
+  taskIds[0] = "11183691543044";
+  taskIds[1] = "11183691543041";
+  taskIds[2] = "11183691543037";
+  taskIds[3] = "11183691543032";
+  taskIds[4] = "11183691543063";
+
+  for (int i = 0; i < 5; i++) {
+    readTask(client, taskIds[i], report);
+  }
+
+  L_Mover_Cte(&(report->tasks), L_Primero);
+  do {
+    L_Elem_Cte(report->tasks, (void*) &t);
+    printf("\n------------------------------------------------\n");
+    printTask(&t);
+  } while(L_Mover_Cte(&(report->tasks), L_Siguiente));
+}
+
+
 int createReport(char* key, char* projectId) {
-  char taskId[30], jsonFile[30]; AsanaClient client;
+  char docId[30]; AsanaClient client;
   TDA_Task t;
 
   ProjectReport report;
@@ -14,17 +37,14 @@ int createReport(char* key, char* projectId) {
 
   createAsanaClient(&client, key);
 
-  strcpy(taskId, "11183691543032");
-  strcpy(jsonFile, "files/task.json");
-
-  readTask(&client, taskId, &report);
-
-  L_Elem_Cte(report.tasks, (void*) &t);
-  printTask(&t);
+  prueba(&client, &report);
 
   destroyReport(&report);
   return 0;
 }
+
+
+int countTasks(&project)
 
 
 int initializeReport(ProjectReport* report) {
@@ -53,7 +73,7 @@ int readProject(AsanaClient* client, char* projectId, ProjectReport* report) {
   InicProj(&p);
   CargarProj(&p, jsonFile);
   report->project = &p;
-  return 0;
+  return remove(jsonFile);
 }
 
 // Descomentar cuando este el TDA_ProjectDetail.c
@@ -68,7 +88,7 @@ int readProject(AsanaClient* client, char* projectId, ProjectReport* report) {
 //   // Capturar error aqui
 //   TDA_ProjectDetailCreate(&pd, jsonFile);
 //   report->projectDetail = &pd;
-//   return 0;
+//   return remove(jsonFile);
 // }
 
 
@@ -82,9 +102,10 @@ int readTask(AsanaClient* client, char* taskId, ProjectReport* report) {
 
   if (!createTask(&t, jsonFile)) {
     if (L_Vacia(report->tasks))
-      return L_Insertar_Cte(&(report->tasks), L_Primero, (void*) &t);
+      L_Insertar_Cte(&(report->tasks), L_Primero, (void*) &t);
     else
-      return L_Insertar_Cte(&(report->tasks), L_Siguiente, (void*) &t);
+      L_Insertar_Cte(&(report->tasks), L_Siguiente, (void*) &t);
   }
-  return -1;
+
+  return remove(jsonFile);
 }

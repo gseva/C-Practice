@@ -16,6 +16,7 @@
   void incPtr();
   void incOpenBrackets();
   void incClosedBrackets();
+  int initializeParser();
 
 
   // Searches in str starting from pointer for any character from chrs.

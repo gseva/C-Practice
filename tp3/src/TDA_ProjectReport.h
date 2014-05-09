@@ -39,21 +39,35 @@
   /**
    * Initializes ProjectReport instance.
    *
-   * PRE: report not initialized.
-   * POST: report initialized and empty.
+   * PRE: Report not initialized.
+   * POST: Report initialized and empty.
    */
   int initializeReport(ProjectReport* report);
 
   /**
    * Destroys ProjectReport instance.
    *
-   * PRE: report initialized.
-   * POST: memory free.
+   * PRE: Report initialized.
+   * POST: Memory free.
    */
   int destroyReport(ProjectReport* report);
 
+  /**
+   * Reads the respective ADT and saves it in the report.
+   *
+   * PRE: Report and client initialized.
+   * POST: Report saves reference to a created structure, non 0 value if error.
+   */
   int readProject(AsanaClient* client, char* projectId, ProjectReport* report);
   int readProjectDetail(AsanaClient* client, char* pdId, ProjectReport* report);
   int readTask(AsanaClient* client, char* taskId, ProjectReport* report);
+
+  /**
+   * Returns number of finalized tasks.
+   *
+   * PRE: Report initialized.
+   * POST: Returns count.
+   */
+  int getFinalizedTasksCount(ProjectReport* report);
 
 #endif
