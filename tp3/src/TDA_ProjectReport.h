@@ -63,11 +63,33 @@
   int readTask(AsanaClient* client, char* taskId, ProjectReport* report);
 
   /**
-   * Returns number of finalized tasks.
+   * Returns number of tasks or sprints of the project.
    *
-   * PRE: Report initialized.
+   * PRE: Report initialized, ProjectDetail readed.
+   * POST: Returns count.
+   */
+  int getTasksCount(ProjectReport* report);
+  int getSprintsCount(ProjectReport* report);
+
+  /**
+   * Returns number of finalized tasks of the project.
+   *
+   * PRE: Report initialized, ProjectDetail and Tasks readed.
    * POST: Returns count.
    */
   int getFinalizedTasksCount(ProjectReport* report);
+  int getOverdueTasksCount(ProjectReport* report);
+  int getBugsCount(ProjectReport* report);
+  int getMilestonesCount(ProjectReport* report);
+  int getPendingMilestonesCount(ProjectReport* report);
+
+  /**
+   * Returns an average of overdue days.
+   *
+   * PRE: Report initialized, ProjectDetail and Tasks readed.
+   * POST: Returns average.
+   */
+  int getAverageOverdue(ProjectReport* report);
+
 
 #endif

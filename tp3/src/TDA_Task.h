@@ -9,6 +9,7 @@
   #include "parser.h"
 
   #define bool2str(a) (a ? "Si": "No")
+  #define date2str(a) (a ? a: "null")
 
   /**
    * Private structure

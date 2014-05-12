@@ -33,10 +33,10 @@ int L_Mover_Cte(TListaSimple *pLs, TMovimiento_Ls M)
 {
 	switch (M)
 	{
-		case L_Primero: 
+		case L_Primero:
 			pLs->Corriente=pLs->Primero;
 		break;
-		case L_Siguiente: 
+		case L_Siguiente:
 			if (pLs->Corriente->Siguiente==NULL)
 				return FALSE;
 			else
