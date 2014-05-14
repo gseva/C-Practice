@@ -59,6 +59,8 @@ int createReport(char* key, char* projectId) {
 
   createAsanaClient(&client, key);
 
+  readProject(&client, projectId, &report);
+
   readProjectDetail(&client, projectId, &report);
 
   do {
@@ -89,21 +91,21 @@ int makeTextOutput(ProjectReport* report, char* csvFileName) {
       return 1;
   }
 
-  // fprintf(f, "Proyecto: %s\n", ); //TP2-Algo2 (11183691543028)
-  // fprintf(f, "Fecha inicio: %s\n", ); //2014-03-25
+  fprintf(f, "Proyecto: %s\n", Get_name(report->project));
+  fprintf(f, "Fecha inicio: %s\n", Get_created_at(report->project));
   fprintf(f, "Tareas (total): %d\n", getTasksCount(report));
   aux = getFinalizedTasksCount(report);
   aux2 = getOverdueFinalizedTasksCount(report);
   fprintf(f, "Tareas finalizadas: %d\n", aux);
   fprintf(f, "Tareas finalizadas con atrasos: %d\n", aux2);
-  // fprintf(f, "%% atrasadas / finalizadas: %f%%\n", percentage(aux, aux2));
+  fprintf(f, "%% atrasadas / finalizadas: %.2f%%\n", percentage(aux, aux2));
   // fprintf(f, "Promedio dias de atraso: %d\n", getAverageOverdue(report));
   fprintf(f, "Bugs reportados: %d\n", getBugsCount(report));
   aux = getMilestonesCount(report);
   aux2 = getPendingMilestonesCount(report);
   fprintf(f, "Hitos alcanzados: %d\n", aux);
   fprintf(f, "Hitos pendientes: %d\n", aux2);
-  // fprintf(f, "Progreso (hitos): %f%%\n", percentage(aux, aux2));
+  fprintf(f, "Progreso (hitos): %.2f%%\n", percentage(aux, aux2));
   fprintf(f, "Detalle de tareas: %s\n", csvFileName);
 
   return fclose(f);
@@ -138,10 +140,8 @@ int readProject(AsanaClient* client, char* projectId, ProjectReport* report) {
   if(getProjectJsonFile(client, projectId, jsonFile) != 0) {
       return -1;
   }
-
-  InicProj(&p);
   CargarProj(&p, jsonFile);
-  report->project = &p;
+  memcpy(report->project, &p, sizeof(Project));
   return remove(jsonFile);
 }
 

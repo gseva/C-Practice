@@ -3,15 +3,15 @@
 #include <string.h>
 #include "TDA_Project.h"
 
-	
 
-void substring ( const char * source, int startIndex, int endIndex ,char** value) {
+
+char* substring ( const char * source, int startIndex, int endIndex) {
     char *result="";
     if (startIndex < 0) {
         printf("startIndex should be a positive value\n");
     }
     else if (endIndex <= startIndex) {
-        /*printf("endIdnex should larger than startIndex\n");*/
+        //printf("endIdnex should larger than startIndex\n");
     } else if (startIndex > (strlen(source))) {
         printf("startIdnex should smaller than source length\n");
     } else if (endIndex > (strlen(source)+1)) {
@@ -21,13 +21,12 @@ void substring ( const char * source, int startIndex, int endIndex ,char** value
         result = (char*)malloc(sizeof(char)*len+1);
         memset (result, '\0', len+1);
         strncpy (result, source+startIndex, len);
-		*value = realloc(*value, strlen(result)+1);
-		strcpy(*value, result);
 	}
+	return result;
 }
 
 
-void copiarcad(char *cadena,char** value){
+char* copiarcad(char *cadena){
 	int fin=0,ini=0;
 	
 	ini=strcspn(cadena,":")+2;
@@ -37,9 +36,7 @@ void copiarcad(char *cadena,char** value){
 	while ((cadena[fin]=='"')||(cadena[fin]==',')||(cadena[fin]==' ')||(cadena[fin]=='\n'))
 		fin=fin-1;
 	fin=fin+1;
-	substring(cadena,ini,fin,value);
-	strcat(*value,"\0");
-	//return value;
+	return substring(cadena,ini,fin);
 }
 
 
@@ -52,11 +49,15 @@ void copiarcad(char *cadena,char** value){
 
 
 void CrearProj(void *pProject){
-	pProject=(Project*) malloc(sizeof(Project));
+	//pProject=(Project*) malloc(sizeof(Project));
 }
 
 void EliminarProj(Project *pProject){
+/*	free(pProject->followers);
+	free(pProject->members);
+	free(pProject->workspace);
 	free(pProject);
+	*/
 }
 
 
@@ -150,52 +151,64 @@ char* Get_color(Project *pProject){
 char* Get_created_at(Project *pProject){
 	return pProject->created_at;
 }
-void Get_followers_id(Project *pProject,char** cadena){
+int Get_followers_id(Project *pProject,char** cadena){
 	int i,cant;
-	*cadena=(char*) malloc(sizeof(char));
 	cant=Get_followers_cont(pProject);
+	*cadena=(char*) malloc(sizeof(char)*(cant*255));
+	strcpy(*cadena,"");
 	for (i=0;i<(cant);i++){
-		realloc(*cadena,(strlen(*cadena)+strlen(pProject->followers[i].pID)+1));
+		//if (realloc(*cadena,(strlen(*cadena)+strlen(pProject->followers[i].pID)+1)))
+		//	return 1;
 		strcat(*cadena,pProject->followers[i].pID);
 		if (i!=(cant-1))
 			strcat(*cadena,", ");
 	}
+	return 0;
 }
-void Get_followers_name(Project *pProject,char** cadena){
+int Get_followers_name(Project *pProject,char** cadena){
 	int i,cant;
-	*cadena=(char*) malloc(sizeof(char));
 	cant=Get_followers_cont(pProject);
+	*cadena=(char*) malloc(sizeof(char)*(cant*255));
+	strcpy(*cadena,"");
 	for (i=0;i<(cant);i++){
-		realloc(*cadena,(strlen(*cadena)+strlen(pProject->followers[i].pName)+1));
+		//if (realloc(*cadena,(strlen(*cadena)+strlen(pProject->followers[i].pName)+1)))
+		//	return 1;
 		strcat(*cadena,pProject->followers[i].pName);
 		if (i!=(cant-1))
 			strcat(*cadena,", ");
 	}
+	return 0;
 }
 char* Get_id(Project *pProject){
 	return pProject->id;
 }
-void Get_members_id(Project *pProject,char** cadena){
+int Get_members_id(Project *pProject,char** cadena){
 	int i,cant;
-	*cadena=(char*) malloc(sizeof(char));
 	cant=Get_members_cont(pProject);
+	*cadena=(char*) malloc(sizeof(char)*(cant*255));
+	strcpy(*cadena,"");
 	for (i=0;i<(cant);i++){
-		realloc(*cadena,(strlen(*cadena)+strlen(pProject->members[i].pID)+1));
+		//if (realloc(*cadena,(strlen(*cadena)+strlen(pProject->members[i].pID)+1)))
+		//	return 1;
 		strcat(*cadena,pProject->members[i].pID);
 		if (i!=(cant-1))
 			strcat(*cadena,", ");
 	}
+	return 0;
 }
-void Get_members_name(Project *pProject,char** cadena){
+int Get_members_name(Project *pProject,char** cadena){
 	int i,cant;
-	*cadena=(char*) malloc(sizeof(char));
 	cant=Get_members_cont(pProject);
+	*cadena=(char*) malloc(sizeof(char)*(cant*255));
+	strcpy(*cadena,"");
 	for (i=0;i<(cant);i++){
-		realloc(*cadena,(strlen(*cadena)+strlen(pProject->members[i].pName)+1));
+		//if (realloc(*cadena,(strlen(*cadena)+strlen(pProject->members[i].pName)+1)))
+		//	return 1;
 		strcat(*cadena,pProject->members[i].pName);
 		if (i!=(cant-1))
 			strcat(*cadena,", ");
 	}
+	return 0;
 }
 char* Get_modified_at(Project *pProject){
 	return pProject->modified_at;
@@ -209,27 +222,33 @@ char* Get_notes(Project *pProject){
 char* Get_public(Project *pProject){
 	return (pProject->public=0)?"False":"True";
 }
-void Get_workspace_id(Project *pProject,char** cadena){
+int Get_workspace_id(Project *pProject,char** cadena){
 	int i,cant;
-	*cadena=(char*) malloc(sizeof(char));
 	cant=Get_workspace_cont(pProject);
+	*cadena=(char*) malloc(sizeof(char)*(cant*255));
+	strcpy(*cadena,"");
 	for (i=0;i<(cant);i++){
-		realloc(*cadena,(strlen(*cadena)+strlen(pProject->workspace[i].pID)+1));
+		//if (realloc(*cadena,(strlen(*cadena)+strlen(pProject->workspace[i].pID)+1)))
+		//	return 1;
 		strcat(*cadena,pProject->workspace[i].pID);
 		if (i!=(cant-1))
 			strcat(*cadena,", ");
 	}
+	return 0;
 }
-void Get_workspace_name(Project *pProject,char** cadena){
+int Get_workspace_name(Project *pProject,char** cadena){
 	int i,cant;
-	*cadena=(char*) malloc(sizeof(char));
 	cant=Get_workspace_cont(pProject);
+	*cadena=(char*) malloc(sizeof(char)*(cant*255));
+	strcpy(*cadena,"");
 	for (i=0;i<(cant);i++){
-		realloc(*cadena,(strlen(*cadena)+strlen(pProject->workspace[i].pName)+1));
+		//if (realloc(*cadena,(strlen(*cadena)+strlen(pProject->workspace[i].pName)+1)))
+		//	return 1;
 		strcat(*cadena,pProject->workspace[i].pName);
 		if (i!=(cant-1))
 			strcat(*cadena,", ");
 	}
+	return 0;
 }
 
 
@@ -286,111 +305,128 @@ void InicProj(Project *pProject){
 
 
 
+
+
+
 void CargarProj(Project* pProject,char Archivo[]){
 	
-	int control;
-	char Linea[255];
-	char* Valor = malloc(255 * sizeof(char));
+	size_t fLen;
+	char* Linea;
 	char* sID = malloc(255 * sizeof(char));
 	char* sName = malloc(255 * sizeof(char));
 	InicProj(pProject);
 	
-	FILE *pFile;
-	pFile = fopen(Archivo,"r");
-	
-	if (pFile!=NULL)
-	{
-	do {
-		fgets(Linea,255,pFile);
-		control=fgetc(pFile);
-		
+	size_t pos,posAnt=0;
+	FILE* pFile = fopen(Archivo, "r");
+	if (pFile!=NULL){
+		fseek(pFile,0,SEEK_END);
+		fLen=ftell(pFile);
+		fseek(pFile,0,SEEK_SET);
 			
-		if (strstr(Linea,"archived")!=0) {
-			copiarcad(Linea,&Valor);
-			Set_archived(pProject,Valor);
-		}
-		else if (strstr(Linea,"color")!=0) {
-			copiarcad(Linea,&Valor);
-			Set_color(pProject,Valor);
-		}
-		else if (strstr(Linea,"created_at")!=0) {
-			copiarcad(Linea,&Valor);
-			Set_created_at(pProject,Valor);
-		}
-		else if (strstr(Linea,"followers")!=0) {
-			while ((strstr(Linea,"]")==0)&&(control!=EOF)) {
-				if (strstr(Linea,"}")!=0){
-					Set_followers(pProject,sID,sName);
-					strcpy(sID,"");
-					strcpy(sName,"");
-				}
-				else if (strstr(Linea,"id")!=0) 
-					copiarcad(Linea,&sID);
-				else if (strstr(Linea,"name")!=0) 
-					copiarcad(Linea,&sName);
-				fgets(Linea,255,pFile);
-				control=fgetc(pFile);
+		Linea = malloc(fLen);
+		if (fread(Linea,fLen,1,pFile)==0)
+			return;
+		
+		fclose(pFile);
+		
+		
+		char* cBusq="{}[],";
+		pos=strcspn(Linea,cBusq);
+		char* nLinea;
+		while(strcspn(Linea+posAnt+1,cBusq)!=0){
+			nLinea=substring(Linea,posAnt,pos-1);
+			
+			if (strstr(nLinea,"archived")!=0) {
+				Set_archived(pProject,copiarcad(nLinea));
 			}
-		}
-		else if (strstr(Linea,"id")!=0) {
-			copiarcad(Linea,&Valor);
-			Set_id(pProject,Valor);
-		}
-		else if (strstr(Linea,"members")!=0) {
-			while ((strstr(Linea,"]")==0)&&(control!=EOF)) {
-				if (strstr(Linea,"}")!=0){
-					Set_members(pProject,sID,sName);
-					strcpy(sID,"");
-					strcpy(sName,"");
-				}
-				else if (strstr(Linea,"id")!=0) 
-					copiarcad(Linea,&sID);
-				else if (strstr(Linea,"name")!=0) 
-					copiarcad(Linea,&sName);
-				fgets(Linea,255,pFile);
-				control=fgetc(pFile);
+			else if (strstr(nLinea,"color")!=0) {
+				Set_color(pProject,copiarcad(nLinea));
 			}
-		}
-		else if (strstr(Linea,"modified_at")!=0) {
-			copiarcad(Linea,&Valor);
-			Set_modified_at(pProject,Valor);
-		}
-		else if (strstr(Linea,"name")!=0) {
-			copiarcad(Linea,&Valor);
-			Set_name(pProject,Valor);
-		}
-		else if (strstr(Linea,"notes")!=0) {
-			copiarcad(Linea,&Valor);
-			Set_notes(pProject,Valor);
-		}
-		else if (strstr(Linea,"public")!=0) {
-			copiarcad(Linea,&Valor);
-			Set_public(pProject,Valor);
-		}
-		else if (strstr(Linea,"workspace")!=0) {
-			while ((strstr(Linea,"]")==0)&&(control!=EOF)) {
-				if (strstr(Linea,"}")!=0){
-					Set_workspace(pProject,sID,sName);
-					strcpy(sID,"");
-					strcpy(sName,"");
-				}
-				else if (strstr(Linea,"id")!=0) 
-					copiarcad(Linea,&sID);
-				else if (strstr(Linea,"name")!=0) 
-					copiarcad(Linea,&sName);
-				fgets(Linea,255,pFile);
-				control=fgetc(pFile);
+			else if (strstr(nLinea,"created_at")!=0) {
+				Set_created_at(pProject,copiarcad(nLinea));
 			}
+			else if (strstr(nLinea,"followers")!=0) {
+				posAnt=pos;pos=strcspn(Linea+posAnt+1,cBusq)+posAnt+2;
+				while((strstr(nLinea,"]")==0)&&(strcspn(Linea+posAnt+1,cBusq)!=0)){
+					nLinea=substring(Linea,posAnt-1,pos-1);
+					if (strstr(nLinea,"}")!=0){
+						Set_followers(pProject,sID,sName);
+						strcpy(sID,"");
+						strcpy(sName,"");
+					}
+					else if (strstr(nLinea,"id")!=0) 
+						sID=copiarcad(nLinea);
+					else if (strstr(nLinea,"name")!=0) 
+						sName=copiarcad(nLinea);
+					posAnt=pos;pos=strcspn(Linea+posAnt,cBusq)+posAnt+1;
+				}
+				pos=posAnt;posAnt=posAnt-2;
+			}
+			else if (strstr(nLinea,"id")!=0) {
+				Set_id(pProject,copiarcad(nLinea));
+			}
+			else if (strstr(nLinea,"members")!=0) {
+				posAnt=pos;pos=strcspn(Linea+posAnt+1,cBusq)+posAnt+2;
+				while((strstr(nLinea,"]")==0)&&(strcspn(Linea+posAnt+1,cBusq)!=0)){
+					nLinea=substring(Linea,posAnt-1,pos-1);
+					if (strstr(nLinea,"}")!=0){
+						Set_members(pProject,sID,sName);
+						strcpy(sID,"");
+						strcpy(sName,"");
+					}
+					else if (strstr(nLinea,"id")!=0) 
+						sID=copiarcad(nLinea);
+					else if (strstr(nLinea,"name")!=0) 
+						sName=copiarcad(nLinea);
+					posAnt=pos;pos=strcspn(Linea+posAnt,cBusq)+posAnt+1;
+				}
+				pos=posAnt;posAnt=posAnt-2;
+			}
+			else if (strstr(nLinea,"modified_at")!=0) {
+				Set_modified_at(pProject,copiarcad(nLinea));
+			}
+			else if (strstr(nLinea,"name")!=0) {
+				Set_name(pProject,copiarcad(nLinea));
+			}
+			else if (strstr(nLinea,"notes")!=0) {
+				Set_notes(pProject,copiarcad(nLinea));
+			}
+			else if (strstr(nLinea,"public")!=0) {
+				Set_public(pProject,copiarcad(nLinea));
+			}
+			else if (strstr(nLinea,"workspace")!=0) {
+				posAnt=pos;pos=strcspn(Linea+posAnt+1,cBusq)+posAnt+2;
+				while((strstr(nLinea,"]")==0)&&(strcspn(Linea+posAnt+1,cBusq)!=0)){
+					nLinea=substring(Linea,posAnt-1,pos-1);
+					if (strstr(nLinea,"}")!=0){
+						Set_workspace(pProject,sID,sName);
+						strcpy(sID,"");
+						strcpy(sName,"");
+					}
+					else if (strstr(nLinea,"id")!=0) 
+						sID=copiarcad(nLinea);
+					else if (strstr(nLinea,"name")!=0) 
+						sName=copiarcad(nLinea);
+					posAnt=pos;pos=strcspn(Linea+posAnt,cBusq)+posAnt+1;
+				}
+				pos=posAnt;posAnt=posAnt-2;
+			}
+			
+			
+			
+			posAnt=pos;pos=strcspn(Linea+posAnt,cBusq)+posAnt+1;
 		}
 		
-	
-	} while(control!=EOF);
-	free(sName);
-	free(sID);
-	free(Valor);
-	
-	fclose(pFile);
+		
+		free(Linea);
+		free(sName);
+		free(sID);
 	
 	}
 	
 }
+
+
+
+	
+	

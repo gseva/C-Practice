@@ -18,7 +18,7 @@
   #include "TDA_CsvFile.h"
   #include "Lista.h"
 
-  #define percentage(a, b) (((double)a / b) * 100)
+  #define percentage(a, b) ((b) ? ((double)a / b) * 100 : 0)
 
   typedef struct {
 
