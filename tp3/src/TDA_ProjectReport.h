@@ -15,8 +15,10 @@
   #include "TDA_ProjectDetail.h"
   #include "TDA_Project.h"
   #include "TDA_Task.h"
+  #include "TDA_CsvFile.h"
   #include "Lista.h"
 
+  #define percentage(a, b) (((double)a / b) * 100)
 
   typedef struct {
 
@@ -82,6 +84,7 @@
   int getBugsCount(ProjectReport* report);
   int getMilestonesCount(ProjectReport* report);
   int getPendingMilestonesCount(ProjectReport* report);
+  int getOverdueFinalizedTasksCount(ProjectReport* report);
 
   /**
    * Returns an average of overdue days.
@@ -91,5 +94,20 @@
    */
   int getAverageOverdue(ProjectReport* report);
 
+  /**
+   * Creates a file named "project.txt", with project information.
+   *
+   * PRE: Report initialized, Project, ProjectDetail and Tasks readed.
+   * POST: File created, filled and closed.
+   */
+  int makeTextOutput(ProjectReport* report, char* csvFileName);
+
+  /**
+   * Creates, fills and exports a csv file.
+   *
+   * PRE: Report initialized, Project, ProjectDetail and Tasks readed.
+   * POST: File created, filled and closed.
+   */
+  int makeCsvOutput(ProjectReport* report, char* tasksFile);
 
 #endif

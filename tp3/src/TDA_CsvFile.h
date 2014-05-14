@@ -3,12 +3,27 @@
  */
 
 #ifndef TDA_CSVFILE_H_INCLUDED
-#define TDA_CSVFILE_H_INCLUDED
+  #define TDA_CSVFILE_H_INCLUDED
 
-typedef struct _CsvFile {
+  #include <stdio.h>
+  #include <stdio.h>
+  #include <string.h>
 
-  char* _placeholder;
+  #include "Lista.h"
 
-} CsvFile;
+  #define ROW_SIZE 1024
+
+  typedef struct _CsvFile {
+
+    TListaSimple rows;
+
+  } CsvFile;
+
+  int initializeCsvFile(CsvFile* csvFile);
+  int destroyCsvFile(CsvFile* csvFile);
+
+  int addRow(CsvFile* csvFile, char* row);
+
+  int export(CsvFile* csvFile, char* path);
 
 #endif // TDA_CSVFILE_H_INCLUDED
