@@ -99,6 +99,7 @@ void Set_color(Project *pProject,char *Valor){
 }
 void Set_created_at(Project *pProject,char *Valor){
 	strcpy(pProject->created_at,Valor);
+	strcpy(pProject->created_at+10,"\0");
 }
 void Set_followers(Project *pProject,char *sID,char *sName){
 	int pos=Get_followers_cont(pProject);
@@ -117,6 +118,7 @@ void Set_members(Project *pProject,char *sID,char *sName){
 }
 void Set_modified_at(Project *pProject,char *Valor){
 	strcpy(pProject->modified_at,Valor);
+	strcpy(pProject->modified_at+10,"\0");
 }
 void Set_name(Project *pProject,char *Valor){
 	strcpy(pProject->name,Valor);
@@ -301,8 +303,20 @@ void InicProj(Project *pProject){
 
 
 
-
-
+int TraerLinea(char** Cadena,char** Salida,size_t* pos){
+	char* cBusq="{}[],";
+	size_t posAnt;
+	
+	posAnt=*pos;
+	*pos=strcspn(*Cadena+posAnt,cBusq)+posAnt;
+	if (posAnt==*pos)
+		*pos=*pos+1;
+	if ((*pos==0)||(*pos>strlen(*Cadena)))
+		return 0;
+	*Salida=substring(*Cadena,posAnt,*pos);
+	//*pos=*pos+1;
+	return 1;
+}
 
 
 
@@ -314,9 +328,9 @@ void CargarProj(Project* pProject,char Archivo[]){
 	char* Linea;
 	char* sID = malloc(255 * sizeof(char));
 	char* sName = malloc(255 * sizeof(char));
+	int EsperaFin=0;
 	InicProj(pProject);
 	
-	size_t pos,posAnt=0;
 	FILE* pFile = fopen(Archivo, "r");
 	if (pFile!=NULL){
 		fseek(pFile,0,SEEK_END);
@@ -330,11 +344,11 @@ void CargarProj(Project* pProject,char Archivo[]){
 		fclose(pFile);
 		
 		
-		char* cBusq="{}[],";
-		pos=strcspn(Linea,cBusq);
+		
 		char* nLinea;
-		while(strcspn(Linea+posAnt+1,cBusq)!=0){
-			nLinea=substring(Linea,posAnt,pos-1);
+		size_t pos=0;
+		
+		while(TraerLinea(&Linea,&nLinea,&pos)!=0){
 			
 			if (strstr(nLinea,"archived")!=0) {
 				Set_archived(pProject,copiarcad(nLinea));
@@ -346,41 +360,49 @@ void CargarProj(Project* pProject,char Archivo[]){
 				Set_created_at(pProject,copiarcad(nLinea));
 			}
 			else if (strstr(nLinea,"followers")!=0) {
-				posAnt=pos;pos=strcspn(Linea+posAnt+1,cBusq)+posAnt+2;
-				while((strstr(nLinea,"]")==0)&&(strcspn(Linea+posAnt+1,cBusq)!=0)){
-					nLinea=substring(Linea,posAnt-1,pos-1);
+				EsperaFin=0;
+				while ((strstr(nLinea,"]")==0)&&((EsperaFin==1)||(strstr(nLinea,"}")==0))&&(TraerLinea(&Linea,&nLinea,&pos)!=0)){
 					if (strstr(nLinea,"}")!=0){
 						Set_followers(pProject,sID,sName);
 						strcpy(sID,"");
 						strcpy(sName,"");
 					}
+					else if (strstr(nLinea,"[")!=0)
+						EsperaFin=1;
 					else if (strstr(nLinea,"id")!=0) 
 						sID=copiarcad(nLinea);
 					else if (strstr(nLinea,"name")!=0) 
 						sName=copiarcad(nLinea);
-					posAnt=pos;pos=strcspn(Linea+posAnt,cBusq)+posAnt+1;
 				}
-				pos=posAnt;posAnt=posAnt-2;
+				if (EsperaFin==0){
+					Set_followers(pProject,sID,sName);
+					strcpy(sID,"");
+					strcpy(sName,"");
+				}
 			}
 			else if (strstr(nLinea,"id")!=0) {
 				Set_id(pProject,copiarcad(nLinea));
 			}
 			else if (strstr(nLinea,"members")!=0) {
-				posAnt=pos;pos=strcspn(Linea+posAnt+1,cBusq)+posAnt+2;
-				while((strstr(nLinea,"]")==0)&&(strcspn(Linea+posAnt+1,cBusq)!=0)){
-					nLinea=substring(Linea,posAnt-1,pos-1);
+				EsperaFin=0;
+				while ((strstr(nLinea,"]")==0)&&((EsperaFin==1)||(strstr(nLinea,"}")==0))&&(TraerLinea(&Linea,&nLinea,&pos)!=0)){
 					if (strstr(nLinea,"}")!=0){
 						Set_members(pProject,sID,sName);
 						strcpy(sID,"");
 						strcpy(sName,"");
 					}
+					else if (strstr(nLinea,"[")!=0)
+						EsperaFin=1;
 					else if (strstr(nLinea,"id")!=0) 
 						sID=copiarcad(nLinea);
 					else if (strstr(nLinea,"name")!=0) 
 						sName=copiarcad(nLinea);
-					posAnt=pos;pos=strcspn(Linea+posAnt,cBusq)+posAnt+1;
 				}
-				pos=posAnt;posAnt=posAnt-2;
+				if (EsperaFin==0){
+					Set_members(pProject,sID,sName);
+					strcpy(sID,"");
+					strcpy(sName,"");
+				}
 			}
 			else if (strstr(nLinea,"modified_at")!=0) {
 				Set_modified_at(pProject,copiarcad(nLinea));
@@ -395,27 +417,31 @@ void CargarProj(Project* pProject,char Archivo[]){
 				Set_public(pProject,copiarcad(nLinea));
 			}
 			else if (strstr(nLinea,"workspace")!=0) {
-				posAnt=pos;pos=strcspn(Linea+posAnt+1,cBusq)+posAnt+2;
-				while((strstr(nLinea,"]")==0)&&(strcspn(Linea+posAnt+1,cBusq)!=0)){
-					nLinea=substring(Linea,posAnt-1,pos-1);
+				EsperaFin=0;
+				while ((strstr(nLinea,"]")==0)&&((EsperaFin==1)||(strstr(nLinea,"}")==0))&&(TraerLinea(&Linea,&nLinea,&pos)!=0)){
 					if (strstr(nLinea,"}")!=0){
 						Set_workspace(pProject,sID,sName);
 						strcpy(sID,"");
 						strcpy(sName,"");
 					}
+					else if (strstr(nLinea,"[")!=0)
+						EsperaFin=1;
 					else if (strstr(nLinea,"id")!=0) 
 						sID=copiarcad(nLinea);
 					else if (strstr(nLinea,"name")!=0) 
 						sName=copiarcad(nLinea);
-					posAnt=pos;pos=strcspn(Linea+posAnt,cBusq)+posAnt+1;
 				}
-				pos=posAnt;posAnt=posAnt-2;
+				if (EsperaFin==0){
+					Set_workspace(pProject,sID,sName);
+					strcpy(sID,"");
+					strcpy(sName,"");
+				}
 			}
 			
 			
 			
-			posAnt=pos;pos=strcspn(Linea+posAnt,cBusq)+posAnt+1;
 		}
+
 		
 		
 		free(Linea);

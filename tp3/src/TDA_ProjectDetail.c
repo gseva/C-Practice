@@ -1,5 +1,6 @@
 #include "TDA_ProjectDetail.h"
 
+
 typedef struct
         {
 
@@ -100,7 +101,6 @@ int TDA_ProjectDetailCreate (TDA_ProjectDetail* ProjectDetail, char* JsonFile)
 {
     char *text, *aux_name, *aux_id;
     char palabra[10];
-    int mov;
     TDA_sprint aux_sprint;
     strcpy(palabra, "data");
     text = strstr(JsonFile, palabra);
@@ -146,14 +146,18 @@ int TDA_ProjectDetailCreate (TDA_ProjectDetail* ProjectDetail, char* JsonFile)
 int siguiente_sprint (TDA_ProjectDetail *ProjectDetail)
 {
 
-    return L_Mover_Cte(&(ProjectDetail->sprints), L_Siguiente);
+    int aux;
+    aux= L_Mover_Cte(&(ProjectDetail->sprints), L_Siguiente);
+    return aux;
 
 }
 
 int primer_tarea (TDA_sprint *sprint)
 {
 
-    return L_Mover_Cte(&(sprint->tareas), L_Primero);
+    int aux;
+    aux= L_Mover_Cte(&(sprint->tareas), L_Primero);
+    return aux;
 
 }
 
@@ -189,8 +193,9 @@ int siguiente_tarea_sprint_actual (TDA_ProjectDetail *ProjectDetail)/*problema s
 
 int primer_sprint (TDA_ProjectDetail *ProjectDetail)
 {
-
-    return L_Mover_Cte(&(ProjectDetail->sprints), L_Primero);
+    int aux;
+    aux= L_Mover_Cte(&(ProjectDetail->sprints), L_Primero);
+    return aux;
 
 }
 
@@ -259,37 +264,43 @@ void get_tarea_actual_sprint_actual(TDA_ProjectDetail *ProjectDetail, TDA_tareas
 char* get_name_tarea_actual_sprint_actual (TDA_ProjectDetail *ProjectDetail)
 {
 
+    char* aux;
     TDA_tareas aux_tarea;
     get_tarea_actual_sprint_actual(ProjectDetail, &aux_tarea);
-    return aux_tarea.name;
+    aux= aux_tarea.name;
+    return aux;
 
 }
 
 char* get_id_tarea_actual_sprint_actual (TDA_ProjectDetail *ProjectDetail)
 {
 
+    char* aux;
     TDA_tareas aux_tarea;
     get_tarea_actual_sprint_actual(ProjectDetail, &aux_tarea);
-    return aux_tarea.id;
+    aux= aux_tarea.id;
+    return aux;
 
 }
 
 char * get_idsprint_actual(TDA_ProjectDetail *ProjectDetail)
 {
     TDA_sprint aux_sprint;
-
+    char* aux;
     get_sprint_actual(ProjectDetail, &aux_sprint);
+    aux= aux_sprint.idsprint;
+    return aux;
 
-    return aux_sprint.idsprint;
 }
 
 char *get_namesprint_actual(TDA_ProjectDetail *ProjectDetail)
 {
     TDA_sprint aux_sprint;
-
+    char* aux;
     get_sprint_actual(ProjectDetail, &aux_sprint);
+    aux= aux_sprint.sprintname;
+    return aux;
 
-    return aux_sprint.sprintname;
 }
 
 int TDA_ProjectDetailLoadJson (char* root, char** JsonFile)
@@ -329,3 +340,11 @@ void free_ProjectDetail (TDA_ProjectDetail *ProjectDetail)
     }while (siguiente_sprint(ProjectDetail));
     L_Vaciar(&(ProjectDetail->sprints));
 }
+
+
+/*
+            NUEVO!
+
+*/
+
+

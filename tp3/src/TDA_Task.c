@@ -393,3 +393,104 @@ void printTask(TDA_Task* task) {
   printf("tags: %s\n", tags);
   free(tags);
 }
+
+
+int obtenerTipo(TDA_Task* task, char** tipo)
+{
+
+  char* name;
+  int i=0;
+  name= getTaskName (task);
+  if (name[i] != '[')
+  {
+    strcpy (*tipo, "regular");
+    return 0;
+  }
+  else
+  {
+    while ((name[i+1] != ']') && (name[i+1] != '\0'))
+    {
+        i++;
+        (*tipo)[i-1]= name[i];
+    }
+    if (name[i+1] == ']')
+    {
+        (*tipo)[i]= '\0';
+        return 0;
+    }
+    else return 1;
+  }
+}
+
+
+int obtenerSprintInicio (TDA_Task* task, int* numeroSprint)
+{
+    int out = 0, i; char *name, *pch;
+    int count = getTaskTagsCount(task);
+    *numeroSprint = 0;
+    for(i = 0; i < count; i++) {
+        name = getTaskTagName(task, i);
+        if (strstr(name, "sprint")) {
+            pch = strpbrk(name, "123456789");
+            out = atoi(pch);
+            if (!*numeroSprint || *numeroSprint > out) *numeroSprint = out;
+        }
+    }
+    if (*numeroSprint) return 0;
+    else return 1;
+}
+
+int obtenerSprintFinalizacion (TDA_Task* task, int* numeroSprint)
+{
+    int out = 0, i; char *name, *pch;
+    int count = getTaskTagsCount(task);
+    *numeroSprint = 0;
+    for(i = 0; i < count; i++) {
+        name = getTaskTagName(task, i);
+        if (strstr(name, "sprint")) {
+            pch = strpbrk(name, "123456789");
+            out = atoi(pch);
+            if (!*numeroSprint || *numeroSprint < out) *numeroSprint = out;
+        }
+    }
+    if (*numeroSprint) return 0;
+    else return 1;
+}
+
+
+int date2tm(char* date, struct tm * timeinfo) {
+  int year, month, day;
+  sscanf(date, "%d-%d-%d", &year, &month, &day);
+  timeinfo->tm_year = year - 1900;
+  timeinfo->tm_mon = month - 1;
+  timeinfo->tm_mday = day;
+  timeinfo->tm_hour = 0;
+  timeinfo->tm_min = 0;
+  timeinfo->tm_sec = 0;
+  return 0;
+}
+
+int obtenerDiasRetraso (TDA_Task* task, int* diasRetraso) {
+    char* date; int seconds; time_t raw, completed_time;
+    struct tm* completed_date, *due_date = malloc(sizeof(struct tm));
+
+    date = getTaskDueDate(task);
+    date2tm(date, due_date);
+
+    date = getTaskCompletionDate(task);
+    if (strcmp(date, "null") == 0) {
+      raw = time(NULL);
+      completed_date = localtime(&raw);
+      completed_time = mktime(completed_date);
+    } else {
+      completed_date = malloc(sizeof(struct tm));
+      date2tm(date, completed_date);
+      completed_time = mktime(completed_date);
+      free(completed_date);
+    }
+
+    seconds = difftime(completed_time, mktime(due_date));
+    *diasRetraso = (seconds > 0) ? seconds / (60 * 60 * 24) : 0; // Days
+    free(due_date);
+    return 0;
+}

@@ -6,6 +6,9 @@
 */
 
 #ifndef __TDA_TASK_H_DEFINED__
+
+  #include <time.h>
+
   #include "parser.h"
 
   #define bool2str(a) (a ? "Si": "No")
@@ -116,5 +119,14 @@
   int getTaskTagNames(TDA_Task* task, char** value);
 
   void printTask(TDA_Task* task);
+
+
+  int obtenerTipo(TDA_Task* task, char** tipo);
+
+  int obtenerSprintInicio (TDA_Task* task, int* numeroSprint);
+
+  int obtenerSprintFinalizacion (TDA_Task* task, int* numeroSprint);
+
+  int obtenerDiasRetraso (TDA_Task* task, int* diasRetraso);
 
 #endif
