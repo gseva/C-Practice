@@ -9,7 +9,8 @@
 
 
   #include <stdio.h>
-  #include <stdio.h>
+  #include <stdlib.h>
+  #include <string.h>
 
   #include "TDA_AsanaClient.h"
   #include "TDA_ProjectDetail.h"
@@ -17,6 +18,7 @@
   #include "TDA_Task.h"
   #include "TDA_CsvFile.h"
   #include "Lista.h"
+  #include "Index.h"
 
   #define percentage(a, b) ((b) ? ((double)a / b) * 100 : 0)
 
