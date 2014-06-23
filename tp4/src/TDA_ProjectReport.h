@@ -30,6 +30,8 @@
 
     TListaSimple tasks;
 
+    T_Index assignee, due_date, tags;
+
   } ProjectReport;
 
   /**
@@ -111,5 +113,8 @@
    * POST: File created, filled and closed.
    */
   int makeCsvOutput(ProjectReport* report, char* tasksFile);
+
+
+  int fillIndexes(ProjectReport* report);
 
 #endif

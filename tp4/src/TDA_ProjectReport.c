@@ -81,6 +81,8 @@ int createReport(char* key, char* projectId) {
 
   makeCsvOutput(&report, tasksFile);
 
+  fillIndexes(&report);
+
   return destroyReport(&report);
 }
 
@@ -140,42 +142,54 @@ int makeCsvOutput(ProjectReport* report, char* tasksFile) {
 
 
 int readProject(AsanaClient* client, char* projectId, ProjectReport* report) {
-  char jsonFile[15]; Project p;
+  char jsonFile[50]; Project p;
 
-  strcpy(jsonFile, "project.json");
-  if(getProjectJsonFile(client, projectId, jsonFile) != 0) {
-      return -1;
-  }
+  strcpy(jsonFile, "files/");
+  strcat(jsonFile, "project.json");
+  // Descomentar, es para hacer pruebas con tareas locales
+  // if(getProjectJsonFile(client, projectId, jsonFile) != 0) {
+  //     return -1;
+  // }
   CargarProj(&p, jsonFile);
   memcpy(report->project, &p, sizeof(Project));
-  return remove(jsonFile);
+  return 0;
+  // Descomentar, es para hacer pruebas con tareas locales
+  // return remove(jsonFile);
 }
 
 
 int readProjectDetail(AsanaClient* client, char* pdId, ProjectReport* report) {
-  char jsonFile[20]; TDA_ProjectDetail pd; char* data;
+  char jsonFile[50]; TDA_ProjectDetail pd; char* data;
 
-  strcpy(jsonFile, "projectdetail.json");
-  if(getProjectDetailJsonFile(client, pdId, jsonFile) != 0) {
-      return -1;
-  }
+
+  strcpy(jsonFile, "files/");
+  strcat(jsonFile, "projectdetail.json");
+  // Descomentar, es para hacer pruebas con tareas locales
+  // if(getProjectDetailJsonFile(client, pdId, jsonFile) != 0) {
+  //     return -1;
+  // }
 
   if (TDA_ProjectDetailLoadJson (jsonFile, &data))
     if (TDA_ProjectDetailCreate(&pd, data)) {
       memcpy(report->projectDetail, &pd, sizeof(TDA_ProjectDetail));
-      return remove(jsonFile);
+      return 0;
+      // Descomentar, es para hacer pruebas con tareas locales
+      // return remove(jsonFile); DEBUG
     }
 
   return -1;
 }
 
-int readTask(AsanaClient* client, char* taskId, ProjectReport* report) {
-  char jsonFile[10]; TDA_Task t;
 
-  strcpy(jsonFile, "task.json");
-  if(getTaskJsonFile(client, taskId, jsonFile) != 0) {
-      return -1;
-  }
+int readTask(AsanaClient* client, char* taskId, ProjectReport* report) {
+  char jsonFile[50]; TDA_Task t;
+
+  strcpy(jsonFile, "files/");
+  strcat(jsonFile, taskId);
+  // Descomentar, es para hacer pruebas con tareas locales
+  // if(getTaskJsonFile(client, taskId, jsonFile) != 0) {
+  //     return -1;
+  // }
 
   if (!createTask(&t, jsonFile)) {
     if (L_Vacia(report->tasks))
@@ -184,7 +198,9 @@ int readTask(AsanaClient* client, char* taskId, ProjectReport* report) {
       L_Insertar_Cte(&(report->tasks), L_Siguiente, (void*) &t);
   }
 
-  return remove(jsonFile);
+  return 0;
+  // Descomentar, es para hacer pruebas con tareas locales
+  // return remove(jsonFile); DEBUG
 }
 
 
@@ -224,4 +240,43 @@ int getAverageOverdue(ProjectReport* report) {
     if (!obtenerDiasRetraso(&t, &aux) && aux) { total += aux; count++; }
   } while(L_Mover_Cte(&(report->tasks), L_Siguiente));
   return (count) ? total / count : 0;
+}
+
+
+int string_keycmp(const void* a, const void* b) {
+  return strcmp ((char *) a, (char *) b);
+}
+
+int string_clone(void* destination, const void* source) {
+  if (strcpy((char*) destination, (char*) source))
+    return 0;
+  return 1;
+}
+
+int string_destroy(void* item) {
+  free(item);
+  return 0;
+}
+
+int print_operate(void* value, void* shared_data) {
+  printf("Opero valor %s\n", (char*) value);
+  return 0;
+}
+
+int fillIndexes(ProjectReport* report) {
+  TDA_Task t;
+  char *taskId = malloc(30), *assignee = malloc(100);
+
+  idx_create(&(report->assignee), 30, 100, string_keycmp, string_clone,
+             string_clone, string_destroy, string_destroy);
+  L_Mover_Cte(&(report->tasks), L_Primero);
+  do {
+    L_Elem_Cte(report->tasks, &t);
+    strcpy(taskId, getTaskId(&t));
+    strcpy(assignee, getTaskAssigneeName(&t));
+    idx_put(&(report->assignee), assignee, taskId);
+  } while(L_Mover_Cte(&(report->tasks), L_Siguiente));
+
+  idx_go_through(&(report->assignee), print_operate, NULL, 255);
+  return 0;
 }

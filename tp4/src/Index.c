@@ -50,12 +50,16 @@ int idx_destroy(T_Index* i) {
 
 int idx_put(T_Index* i, const void* key, const void* value) {
   Item item, *aux = malloc(sizeof(Item)); int mov;
+  item.key = malloc(i->key_size);
+  item.value = malloc(i->value_size);
+  item.key_size = i->key_size;
+  item.value_size = i->value_size;
   i->key_clone(item.key, key);
   i->value_clone(item.value, value);
 
   if (AB_MoverCte(&(i->data), RAIZ)) {
     do {
-      AB_ElemCte(i->data, &aux);
+      AB_ElemCte(i->data, aux);
       if (i->keycmp(aux->key, key) > 0) {  // aux.key > key
         mov = IZQ;
       } else {

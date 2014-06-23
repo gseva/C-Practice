@@ -12,6 +12,7 @@
   typedef int (*F_Clone) (void* destination, const void* source);
   typedef int (*F_Destroy) (void*);
   typedef int (*F_Operate) (void* value, void* shared_data);
+
   typedef struct _index {
     TAB data;
 
