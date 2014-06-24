@@ -1,0 +1,12 @@
+Proyecto: TP2-Algo2
+Fecha inicio: 2014-03-25
+Tareas (total): 10
+Tareas finalizadas: 3
+Tareas finalizadas con atrasos: 3
+% atrasadas / finalizadas: 100.00%
+Promedio dias de atraso: 39
+Bugs reportados: 1
+Hitos alcanzados: 0
+Hitos pendientes: 1
+Progreso (hitos): 0.00%
+Detalle de tareas: tasks.csv

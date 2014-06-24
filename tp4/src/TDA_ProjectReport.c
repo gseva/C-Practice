@@ -246,9 +246,16 @@ int getAverageOverdue(ProjectReport* report) {
   return (count) ? total / count : 0;
 }
 
+int strcicmp(char const *a, char const *b) {
+    for (;; a++, b++) {
+      int d = tolower(*a) - tolower(*b);
+      if (d != 0 || !*a)
+        return d;
+    }
+}
 
 int string_keycmp(const void* a, const void* b) {
-  return strcmp ((char *) a, (char *) b);
+  return strcicmp ((const char *) a, (const char *) b);
 }
 
 int string_clone(void* destination, const void* source) {
@@ -263,6 +270,13 @@ int string_destroy(void* item) {
 }
 
 int print_operate(void* value, void* shared_data) {
+  return 0;
+}
+
+int show_due_date(void* value, void* shared_data) {
+  TDA_Task t;
+  getTaskById((ProjectReport*) shared_data, value, &t);
+  printf("Obtengo tarea con due date %s\n", getTaskDueDate(&t));
   return 0;
 }
 
@@ -293,6 +307,16 @@ int fillIndexes(ProjectReport* report) {
 
   free(taskId); free(assigneeName); free(dueDate);
   return 0;
+}
+
+int getTaskById(ProjectReport* report, char* taskId, TDA_Task *t) {
+  int output = -1;
+  L_Mover_Cte(&(report->tasks), L_Primero);
+  do {
+    L_Elem_Cte(report->tasks, t);
+    output = strcmp(taskId, getTaskId(t));
+  } while(L_Mover_Cte(&(report->tasks), L_Siguiente) && output);
+  return output;
 }
 
 void buscar_cositas(ProjectReport* report, char* key) {
@@ -330,12 +354,13 @@ void getInput(ProjectReport* report) {
   while(!stop) {
     fgets (input, 100, stdin);
     length = strlen(input) - 1;
-    if (input[length] == '\n') input[length] = '\0';
-
+    if (input[length] == '\n') input[length] = '\0'; // Remove the trailing newline
 
     if (strcmp(input, "exit") == 0) {
       printf("Bye\n");
       stop = 1;
+    } else if (strcmp(input, "oppan") == 0) {
+      idx_go_through(&(report->dueDateIndex), show_due_date, report, 100);
     } else {
       buscar_cositas(report, input);
     }

@@ -114,8 +114,12 @@
    */
   int makeCsvOutput(ProjectReport* report, char* tasksFile);
 
-
+  /**
+   * Case insentitive string compare.
+   */
+  int strcicmp(char const *a, char const *b);
   int fillIndexes(ProjectReport* report);
   void getInput(ProjectReport* report);
+  int getTaskById(ProjectReport* report, char* taskId, TDA_Task *t);
 
 #endif

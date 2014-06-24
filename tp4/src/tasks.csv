@@ -1,0 +1,11 @@
+Sprint inicio,Tarea,Descripcion,Asignado,Fecha creacion,Fecha estimada,Fecha finalizada,Dias de atraso,Tipo,tags,Sprint finalizacion
+1,Lectura del articulo sobre JSON,Leer completamente el articulo http://es.wikipedia.org/wiki/JSON,Jonathan M. Perrotta,2014-03-25,2014-03-31,2014-04-04,4,Tareas Iniciales, sprint1,1
+1,Lectura del articulo sobre Parsers,Leer http://es.wikipedia.org/wiki/Analizador_sint%C3%A1ctico,Jonathan M. Perrotta,2014-03-25,2014-04-02,2014-04-04,2,Tareas Iniciales, sprint1,1
+1,Prueba de uso de strtok,Realizar un main simple que dada una cadena de caracteres las separe en tokens usando strtok,Jonathan M. Perrotta,2014-03-25,2014-04-10,null,75,Tareas Iniciales, sprint1, sprint2,2
+1,Prueba de lectura de archivos,realizar un main simple que se encargue de leer un archivo y mostrarlo por pantalla,Anibal Lovaglio,2014-03-25,null,null,0,Tareas Iniciales, sprint1,1
+0,Creación de proyecto en Code::Blocks,,Anibal Lovaglio,2014-03-25,2014-04-03,2014-04-04,1,Tareas Iniciales,0
+2,Creación del TDA correspondiente,Ya sea, TDA_Project, TDA_ProjectDetail, o TDA_Task,Jonathan M. Perrotta,2014-03-25,2014-04-16,null,69,Integrales, sprint2,2
+2,Lectura de archivo Json y carga de TDA,Desarrollo del proceso que lee el archivo json y carga los datos en el TDA correspondiente a proyecto, detalle de proyecto o tarea,Anibal Lovaglio,2014-03-25,2014-04-23,null,62,Integrales, sprint2,2
+2,Escritura por pantalla con formato esperado,Función que saca por pantalla los datos del TDA correspondiente con el formato esperado.,Anibal Lovaglio,2014-03-25,2014-04-30,null,55,Integrales, sprint2, feature,2
+0,[Bug] La escritura por pantalla tiene formato erroneo,,Jonathan M. Perrotta,2014-04-04,null,null,0,bug,0
+0,[Milestone] Entrega de .zip en Jarvis pasa pruebas automáticas,Entrega en jarvis del TP,Jonathan M. Perrotta,2014-03-25,2014-05-08,null,47,Integrales, Cierre, milestone,0

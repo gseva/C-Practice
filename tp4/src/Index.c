@@ -102,18 +102,15 @@ int idx_get(T_Index* i, const void* key, TListaSimple* values) {
 
 int _llamada_recursiva(TAB a, int mov, F_Operate operate, void* shared_data, int break_value) {
 
-  Item *aux;
+  Item aux;
 
   if (AB_MoverCte(&a, mov)) {
     if (_llamada_recursiva(a, IZQ, operate, shared_data, break_value))
       return 1;
-    aux = malloc(sizeof(Item));
-    AB_ElemCte(a, aux);
-    if (operate(aux->value, shared_data) == break_value) {
-      free(aux);
+    AB_ElemCte(a, &aux);
+    if (operate(aux.value, shared_data) == break_value) {
       return 1;
     }
-    free(aux);
     if (_llamada_recursiva(a, DER, operate, shared_data, break_value))
       return 1;
   }
