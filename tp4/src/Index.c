@@ -75,7 +75,6 @@ int idx_put(T_Index* i, const void* key, const void* value) {
 
 int idx_get(T_Index* i, const void* key, TListaSimple* values) {
   Item aux; int mov, cmp;
-
   if (AB_Vacio(i->data)) {
     return -1;
   } else {

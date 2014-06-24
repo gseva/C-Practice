@@ -30,7 +30,7 @@
 
     TListaSimple tasks;
 
-    T_Index assignee, due_date, tags;
+    T_Index assigneeIndex, dueDateIndex, tagsIndex;
 
   } ProjectReport;
 
@@ -116,5 +116,6 @@
 
 
   int fillIndexes(ProjectReport* report);
+  void getInput(ProjectReport* report);
 
 #endif

@@ -15,8 +15,10 @@ int initializeReport(ProjectReport* report) {
 
 int destroyReport(ProjectReport* report) {
   free(report->project);
-  free(report->projectDetail);
+  free_ProjectDetail(report->projectDetail);
   L_Vaciar(&(report->tasks));
+  idx_destroy(&(report->assigneeIndex));
+  idx_destroy(&(report->tagsIndex));
   return 0;
 }
 
@@ -82,6 +84,8 @@ int createReport(char* key, char* projectId) {
   makeCsvOutput(&report, tasksFile);
 
   fillIndexes(&report);
+
+  getInput(&report);
 
   return destroyReport(&report);
 }
@@ -244,6 +248,7 @@ int getAverageOverdue(ProjectReport* report) {
 
 
 int string_keycmp(const void* a, const void* b) {
+  printf("comparo [%s] y [%s] y me da [%d]\n", a, b, strcmp ((char *) a, (char *) b));
   return strcmp ((char *) a, (char *) b);
 }
 
@@ -264,19 +269,78 @@ int print_operate(void* value, void* shared_data) {
 }
 
 int fillIndexes(ProjectReport* report) {
-  TDA_Task t;
-  char *taskId = malloc(30), *assignee = malloc(100);
+  TDA_Task t; int i;
+  char *taskId = malloc(30), *assigneeName = malloc(100), *tag = malloc(100), *dueDate = malloc(20);
 
-  idx_create(&(report->assignee), 30, 100, string_keycmp, string_clone,
+  idx_create(&(report->assigneeIndex), 100, 30, string_keycmp, string_clone,
              string_clone, string_destroy, string_destroy);
+  idx_create(&(report->tagsIndex), 100, 30, string_keycmp, string_clone,
+             string_clone, string_destroy, string_destroy);
+  idx_create(&(report->dueDateIndex), 20, 30, string_keycmp, string_clone,
+             string_clone, string_destroy, string_destroy);
+
   L_Mover_Cte(&(report->tasks), L_Primero);
   do {
     L_Elem_Cte(report->tasks, &t);
     strcpy(taskId, getTaskId(&t));
-    strcpy(assignee, getTaskAssigneeName(&t));
-    idx_put(&(report->assignee), assignee, taskId);
+    strcpy(assigneeName, getTaskAssigneeName(&t));
+    strcpy(dueDate, getTaskDueDate(&t));
+    idx_put(&(report->assigneeIndex), assigneeName, taskId);
+    idx_put(&(report->dueDateIndex), dueDate, taskId);
+    for(i = 0; i < getTaskTagsCount(&t); i++) {
+      strcpy(tag, getTaskTagName(&t, i));
+      idx_put(&(report->tagsIndex), tag, taskId);
+    }
   } while(L_Mover_Cte(&(report->tasks), L_Siguiente));
 
-  idx_go_through(&(report->assignee), print_operate, NULL, 255);
+  free(taskId); free(assigneeName); free(dueDate);
   return 0;
+}
+
+void buscar_cositas(ProjectReport* report, char* key) {
+  TListaSimple cosas; char* taskId = malloc(30);
+  L_Crear(&cosas, 30);
+
+  idx_get(&(report->assigneeIndex), key, &cosas);
+
+  if(!L_Vacia(cosas)) {
+    L_Mover_Cte(&cosas, L_Primero);
+    do {
+      L_Elem_Cte(cosas, taskId);
+      printf("Me escupio task %s\n", taskId);
+    } while(L_Mover_Cte(&cosas, L_Siguiente));
+  } else {
+    printf("No se encontraron cosazas con key %s\n", key);
+  }
+
+  L_Vaciar(&cosas);
+}
+
+void hacer_cositas(ProjectReport* report) {
+  printf("Recorro index por assigneee\n");
+  idx_go_through(&(report->assigneeIndex), print_operate, NULL, 255);
+  printf("Recorro index por tag\n");
+  idx_go_through(&(report->tagsIndex), print_operate, NULL, 255);
+  printf("Recorro index por fechaza\n");
+  idx_go_through(&(report->dueDateIndex), print_operate, NULL, 255);
+}
+
+
+void getInput(ProjectReport* report) {
+  int stop = 0; size_t length; char* input = malloc(100);
+
+  while(!stop) {
+    fgets (input, 100, stdin);
+    length = strlen(input) - 1;
+    if (input[length] == '\n') input[length] = '\0';
+
+
+    if (strcmp(input, "exit") == 0) {
+      printf("Bye\n");
+      stop = 1;
+    } else {
+      buscar_cositas(report, input);
+    }
+  }
+
 }

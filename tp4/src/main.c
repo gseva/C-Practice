@@ -9,6 +9,7 @@
 
 int main(int argc, char* argv[]) {
   char* asanaKey = malloc(30);
+
   if (argc < 3) {
     printf("Cantidad de argumentos invalida\n");
   } else {
