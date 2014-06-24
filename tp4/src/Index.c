@@ -82,7 +82,9 @@ int idx_get(T_Index* i, const void* key, TListaSimple* values) {
     do {
       AB_ElemCte(i->data, &aux);
       cmp = i->keycmp(aux.key, key);
-      if (cmp >= 0) {  // aux.key > key
+      if (cmp > 0) {  // aux.key > key
+        mov = IZQ;
+      } else {
         if (!cmp) {
           if (L_Vacia(*values)) {
             L_Insertar_Cte(values, L_Primero, aux.value);
@@ -91,8 +93,6 @@ int idx_get(T_Index* i, const void* key, TListaSimple* values) {
           }
         }
         mov = DER;
-      } else {
-        mov = IZQ;
       }
     } while (AB_MoverCte(&(i->data), mov));
   }

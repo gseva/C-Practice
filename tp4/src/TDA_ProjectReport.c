@@ -248,7 +248,6 @@ int getAverageOverdue(ProjectReport* report) {
 
 
 int string_keycmp(const void* a, const void* b) {
-  printf("comparo [%s] y [%s] y me da [%d]\n", a, b, strcmp ((char *) a, (char *) b));
   return strcmp ((char *) a, (char *) b);
 }
 
@@ -264,7 +263,6 @@ int string_destroy(void* item) {
 }
 
 int print_operate(void* value, void* shared_data) {
-  printf("Opero valor %s\n", (char*) value);
   return 0;
 }
 
