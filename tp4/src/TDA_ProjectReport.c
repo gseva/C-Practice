@@ -124,8 +124,8 @@ int makeOutput(TListaSimple tasks, char* tasksFile) {
   char buffer[ROW_SIZE]; TDA_Task t; CsvFile csvFile; char* tags = malloc(255);
   int firstSprint, lastSprint, overdueDays;
 
+  initializeCsvFile(&csvFile);
   if (tasksFile) {
-    initializeCsvFile(&csvFile);
     addRow(&csvFile, "Sprint inicio,Tarea,Descripcion,Asignado,Fecha creacion,Fecha estimada,Fecha finalizada,Dias de atraso,Tipo,tags,Sprint finalizacion");
   }
 
@@ -142,7 +142,6 @@ int makeOutput(TListaSimple tasks, char* tasksFile) {
     if (tasksFile) addRow(&csvFile, buffer);
     else printf("%s\n", buffer);
   } while(L_Mover_Cte(&tasks, L_Siguiente));
-
   if (tasksFile) export(&csvFile, tasksFile);
 
   free(tags);
@@ -153,37 +152,28 @@ int makeOutput(TListaSimple tasks, char* tasksFile) {
 int readProject(AsanaClient* client, char* projectId, ProjectReport* report) {
   char jsonFile[50]; Project p;
 
-  strcpy(jsonFile, "files/");
-  strcat(jsonFile, "project.json");
-  // Descomentar, es para hacer pruebas con tareas locales
-  // if(getProjectJsonFile(client, projectId, jsonFile) != 0) {
-  //     return -1;
-  // }
+  strcpy(jsonFile, "project.json");
+  if(getProjectJsonFile(client, projectId, jsonFile) != 0) {
+      return -1;
+  }
   CargarProj(&p, jsonFile);
   memcpy(report->project, &p, sizeof(Project));
-  return 0;
-  // Descomentar, es para hacer pruebas con tareas locales
-  // return remove(jsonFile);
+  return remove(jsonFile);
 }
 
 
 int readProjectDetail(AsanaClient* client, char* pdId, ProjectReport* report) {
   char jsonFile[50]; TDA_ProjectDetail pd; char* data;
 
-
-  strcpy(jsonFile, "files/");
-  strcat(jsonFile, "projectdetail.json");
-  // Descomentar, es para hacer pruebas con tareas locales
-  // if(getProjectDetailJsonFile(client, pdId, jsonFile) != 0) {
-  //     return -1;
-  // }
+  strcpy(jsonFile, "projectdetail.json");
+  if(getProjectDetailJsonFile(client, pdId, jsonFile) != 0) {
+      return -1;
+  }
 
   if (TDA_ProjectDetailLoadJson (jsonFile, &data))
     if (TDA_ProjectDetailCreate(&pd, data)) {
       memcpy(report->projectDetail, &pd, sizeof(TDA_ProjectDetail));
-      return 0;
-      // Descomentar, es para hacer pruebas con tareas locales
-      // return remove(jsonFile); DEBUG
+      return remove(jsonFile);
     }
 
   return -1;
@@ -193,12 +183,11 @@ int readProjectDetail(AsanaClient* client, char* pdId, ProjectReport* report) {
 int readTask(AsanaClient* client, char* taskId, ProjectReport* report) {
   char jsonFile[50]; TDA_Task t;
 
-  strcpy(jsonFile, "files/");
-  strcat(jsonFile, taskId);
-  // Descomentar, es para hacer pruebas con tareas locales
-  // if(getTaskJsonFile(client, taskId, jsonFile) != 0) {
-  //     return -1;
-  // }
+
+  strcpy(jsonFile, taskId);
+  if(getTaskJsonFile(client, taskId, jsonFile) != 0) {
+      return -1;
+  }
 
   if (!createTask(&t, jsonFile)) {
     if (L_Vacia(report->tasks))
@@ -207,9 +196,7 @@ int readTask(AsanaClient* client, char* taskId, ProjectReport* report) {
       L_Insertar_Cte(&(report->tasks), L_Siguiente, (void*) &t);
   }
 
-  return 0;
-  // Descomentar, es para hacer pruebas con tareas locales
-  // return remove(jsonFile); DEBUG
+  return remove(jsonFile);
 }
 
 
@@ -271,17 +258,6 @@ int string_clone(void* destination, const void* source) {
 
 int string_destroy(void* item) {
   free(item);
-  return 0;
-}
-
-int print_operate(void* value, void* shared_data) {
-  return 0;
-}
-
-int show_due_date(void* value, void* shared_data) {
-  TDA_Task t;
-  getTaskById((ProjectReport*) shared_data, value, &t);
-  printf("Obtengo tarea con due date %s\n", getTaskDueDate(&t));
   return 0;
 }
 
@@ -363,6 +339,7 @@ T_Index* getIndexByKey(ProjectReport* report, char* key) {
 
 void getInput(ProjectReport* report) {
   Command command;
+  printf("Ingrese comandos\n");
   pedirInstrucciones(&command);
   while (getAction(&command) != EXIT) {
     if (getAction(&command) == ERROR) printf("Incorrect input\n");
@@ -458,7 +435,6 @@ int executeCommand(ProjectReport* report, Command* command) {
       } else {
         makeOutput(tasks, fileName);
       } // Sort and output
-
     } else {
       printf("No se encontraron tareas \n");
       return -1;
@@ -467,8 +443,6 @@ int executeCommand(ProjectReport* report, Command* command) {
     L_Vaciar(&tasks); L_Vaciar(&taskIds);
   }
 
-  // printf("Clave de sort %s\n", getSortKey(command));
-  // printf("Orden de sort %c\n", getSortOrder(command));
 
   free(value); free(key); free(fileName); free(taskId); free(sortKey);
   return 0;

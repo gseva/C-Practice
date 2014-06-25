@@ -11,7 +11,7 @@ int initializeCsvFile(CsvFile* csvFile) {
 }
 
 int destroyCsvFile(CsvFile* csvFile) {
-  L_Vaciar(&(csvFile->rows));
+  if (!L_Vacia(csvFile->rows)) L_Vaciar(&(csvFile->rows));
   return 0;
 }
 
