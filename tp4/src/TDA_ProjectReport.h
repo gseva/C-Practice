@@ -122,8 +122,8 @@
    */
   int strcicmp(char const *a, char const *b);
 
-
   int fillIndexes(ProjectReport* report);
+  T_Index* getIndexByKey(ProjectReport* report, char* key);
   void getInput(ProjectReport* report);
   int executeCommand(ProjectReport* report, Command* command);
 

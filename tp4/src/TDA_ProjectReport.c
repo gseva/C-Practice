@@ -4,7 +4,9 @@
 
 #include "TDA_ProjectReport.h"
 
-
+typedef struct _sd {
+  TListaSimple initial, *sorted;
+} _sharedData;
 
 int initializeReport(ProjectReport* report) {
   report->project = malloc(sizeof(Project));
@@ -283,6 +285,31 @@ int show_due_date(void* value, void* shared_data) {
   return 0;
 }
 
+int _searchAndInsert(char* value, _sharedData* shared_data, int mov) {
+  TDA_Task t;
+  if (L_Vacia(shared_data->initial)) return -1;
+  L_Mover_Cte(&(shared_data->initial), L_Primero);
+  do {
+    L_Elem_Cte(shared_data->initial, &t);
+    if (strcmp(getTaskId(&t), value) == 0) {
+      if (L_Vacia(*(shared_data->sorted))) {
+        L_Insertar_Cte(shared_data->sorted, L_Primero, &t);
+      } else {
+        L_Insertar_Cte(shared_data->sorted, mov, &t);
+      }
+    }
+  } while(L_Mover_Cte(&(shared_data->initial), L_Siguiente));
+  return 0;
+}
+
+int sortAscending(void* value, void* shared_data) {
+  return _searchAndInsert(value, shared_data, L_Siguiente);
+}
+
+int sortDescending(void* value, void* shared_data) {
+  return _searchAndInsert(value, shared_data, L_Anterior);
+}
+
 int fillIndexes(ProjectReport* report) {
   TDA_Task t; int i;
   char *taskId = malloc(30), *assigneeName = malloc(100), *tag = malloc(100), *dueDate = malloc(20);
@@ -322,25 +349,24 @@ int getTaskById(ProjectReport* report, char* taskId, TDA_Task *t) {
   return output;
 }
 
-void hacer_cositas(ProjectReport* report) {
-  printf("Recorro index por assigneee\n");
-  idx_go_through(&(report->assigneeIndex), print_operate, NULL, 255);
-  printf("Recorro index por tag\n");
-  idx_go_through(&(report->tagsIndex), print_operate, NULL, 255);
-  printf("Recorro index por fechaza\n");
-  idx_go_through(&(report->dueDateIndex), print_operate, NULL, 255);
+T_Index* getIndexByKey(ProjectReport* report, char* key) {
+  T_Index* index = NULL;
+  if (strcmp(key, "tags") == 0) {
+    index = &(report->tagsIndex);
+  } else if (strcmp(key, "dueDate") == 0) {
+    index = &(report->dueDateIndex);
+  } else if (strcmp(key, "assignee") == 0) {
+    index = &(report->assigneeIndex);
+  }
+  return index;
 }
-
 
 void getInput(ProjectReport* report) {
   Command command;
   pedirInstrucciones(&command);
   while (getAction(&command) != EXIT) {
     if (getAction(&command) == ERROR) printf("Incorrect input\n");
-    else
-      if (executeCommand(report, &command) == -1) {
-        printf("Se ha producido un error\n");
-      }
+    else executeCommand(report, &command);
     pedirInstrucciones(&command);
   }
   printf("Bye\n");
@@ -348,34 +374,40 @@ void getInput(ProjectReport* report) {
 
 
 int executeCommand(ProjectReport* report, Command* command) {
-  int keyCount, valueCount, i, j; FILE* file;
-  TDA_Task task; TListaSimple taskIds, tasks; T_Index* index;
-  char *key = malloc(255), *value = malloc(255), *taskId = malloc(30), *fileName = NULL;
+  int keyCount, valueCount, i, j; char sortOrder; FILE* file; _sharedData sharedData;
+  TDA_Task task; TListaSimple taskIds, tasks, sortedTasks; T_Index* index;
+  char *key = malloc(255), *value = malloc(255), *taskId = malloc(30),
+       *fileName = NULL, *sortKey = NULL;
 
   L_Crear(&taskIds, 30); L_Crear(&tasks, sizeof(TDA_Task));
   keyCount = getKeyCount(command);
   valueCount = getValueCount(command);
+  sortOrder = getSortOrder(command);
 
   if (getAction(command) == REPORT) {
     fileName = malloc(255);
     strcpy(fileName, getFileName(command));
     file = fopen(fileName, "w");
-    if (!file) return -1;
+    if (!file) {
+      printf("No se pudo abrir el archivo\n");
+      return -1;
+    }
     fclose(file);
   } // prepare file
 
+  if (sortOrder) {
+    sortKey = malloc(255);
+    strcpy(sortKey, getSortKey(command));
+  }
+
+
   for (i = 0; i < keyCount; i++) {
     strcpy(key, getKeyByIndex(command, i));
-    if (strcmp(key, "tags") == 0) {
-      index = &(report->tagsIndex);
-    } else if (strcmp(key, "dueDate") == 0) {
-      index = &(report->dueDateIndex);
-    } else if (strcmp(key, "assignee") == 0) {
-      index = &(report->assigneeIndex);
-    } else {
+    index = getIndexByKey(report, key);
+    if (!index) {
+      printf("Clave %s incorrecta\n", key);
       return -1;
-    } // select index
-
+    }
     switch (getFormat(command)) {
       case SINGLE_VALUE:
         strcpy(value, getValueByIndex(command, 0));
@@ -405,12 +437,32 @@ int executeCommand(ProjectReport* report, Command* command) {
         } else {
           L_Insertar_Cte(&tasks, L_Siguiente, &task);
         }
-      } while(L_Mover_Cte(&taskIds, L_Siguiente));
-      makeOutput(tasks, fileName);
+      } while(L_Mover_Cte(&taskIds, L_Siguiente)); // Fill tasks list
+
+      if (sortOrder) {
+        index = getIndexByKey(report, sortKey);
+        if (!index) {
+          printf("No se puede ordenar por %s\n", sortKey);
+          return -1;
+        }
+        printf("Ordeno por %s\n", sortKey);
+        L_Crear(&sortedTasks, sizeof(TDA_Task));
+        sharedData.initial = tasks;
+        sharedData.sorted = &sortedTasks;
+        if (sortOrder == 'a')
+          idx_go_through(&(report->assigneeIndex), sortAscending, &sharedData, 255);
+        else
+          idx_go_through(&(report->assigneeIndex), sortDescending, &sharedData, 255);
+        makeOutput(sortedTasks, fileName);
+        L_Vaciar(&sortedTasks);
+      } else {
+        makeOutput(tasks, fileName);
+      } // Sort and output
+
     } else {
       printf("No se encontraron tareas \n");
       return -1;
-    } // process
+    }
 
     L_Vaciar(&tasks); L_Vaciar(&taskIds);
   }
@@ -418,9 +470,7 @@ int executeCommand(ProjectReport* report, Command* command) {
   // printf("Clave de sort %s\n", getSortKey(command));
   // printf("Orden de sort %c\n", getSortOrder(command));
 
-  // printf("Nombre del archivo %s\n", getFileName(command));
-
-  free(value); free(key); free(fileName); free(taskId);
+  free(value); free(key); free(fileName); free(taskId); free(sortKey);
   return 0;
 
 }

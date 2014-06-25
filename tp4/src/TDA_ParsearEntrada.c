@@ -103,7 +103,7 @@ int pedirInstrucciones(Command* command) {
 				break;
 			case 's':
 				if (command->valueCount == MAX_VALUES - 1) {
-					printf("Too much values\n");
+					printf("Demasiados valores\n");
 					command->action = ERROR;
 				} else {
 					strcpy(command->values[command->valueCount], Laux);
@@ -112,10 +112,15 @@ int pedirInstrucciones(Command* command) {
 				break;
 			case 'a':
 			case 'd':
-				command->sortKey = malloc(strlen(Laux));
-				strcpy(command->sortKey, Laux);
-				command->sortOrder = cmdAux;
-				cmdAux='\0';
+				if (!command->sortOrder) {
+					command->sortKey = malloc(strlen(Laux));
+					strcpy(command->sortKey, Laux);
+					command->sortOrder = cmdAux;
+					cmdAux='\0';
+				} else {
+					printf("Solo se admite una clave de ordenamiento\n");
+					command->action = ERROR;
+				}
 				break;
 			case 'o':
 				command->file = malloc(strlen(Laux));
@@ -134,7 +139,7 @@ int pedirInstrucciones(Command* command) {
 		command->action = ERROR;
 
 	if (command->action == REPORT && !command->file) {
-		printf("Please, specify file name with -o option\n");
+		printf("Por favor, especifique el archivo con la opcion -o\n");
 		command->action = ERROR;
 	}
 
@@ -154,6 +159,7 @@ int getFormat(Command* command) {
 int getKeyCount(Command* command) {
 	return command->keyCount;
 }
+
 char* getKeyByIndex(Command* command, int i) {
 	return command->keys[i];
 }
