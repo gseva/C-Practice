@@ -17,6 +17,7 @@
   #include "TDA_Project.h"
   #include "TDA_Task.h"
   #include "TDA_CsvFile.h"
+  #include "TDA_ParsearEntrada.h"
   #include "Lista.h"
   #include "Index.h"
 
@@ -107,19 +108,23 @@
   int makeTextOutput(ProjectReport* report, char* csvFileName);
 
   /**
-   * Creates, fills and exports a csv file.
+   * Creates, fills and exports a csv file or prints output to stdout.
    *
    * PRE: Report initialized, Project, ProjectDetail and Tasks readed.
    * POST: File created, filled and closed.
    */
-  int makeCsvOutput(ProjectReport* report, char* tasksFile);
+  int makeOutput(TListaSimple tasks, char* tasksFile);
+
+  int getTaskById(ProjectReport* report, char* taskId, TDA_Task *t);
 
   /**
    * Case insentitive string compare.
    */
   int strcicmp(char const *a, char const *b);
+
+
   int fillIndexes(ProjectReport* report);
   void getInput(ProjectReport* report);
-  int getTaskById(ProjectReport* report, char* taskId, TDA_Task *t);
+  int executeCommand(ProjectReport* report, Command* command);
 
 #endif

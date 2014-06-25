@@ -81,7 +81,7 @@ int createReport(char* key, char* projectId) {
 
   makeTextOutput(&report, tasksFile);
 
-  makeCsvOutput(&report, tasksFile);
+  makeOutput(report.tasks, tasksFile);
 
   fillIndexes(&report);
 
@@ -118,16 +118,18 @@ int makeTextOutput(ProjectReport* report, char* csvFileName) {
   return fclose(f);
 }
 
-int makeCsvOutput(ProjectReport* report, char* tasksFile) {
+int makeOutput(TListaSimple tasks, char* tasksFile) {
   char buffer[ROW_SIZE]; TDA_Task t; CsvFile csvFile; char* tags = malloc(255);
   int firstSprint, lastSprint, overdueDays;
 
-  initializeCsvFile(&csvFile);
-  addRow(&csvFile, "Sprint inicio,Tarea,Descripcion,Asignado,Fecha creacion,Fecha estimada,Fecha finalizada,Dias de atraso,Tipo,tags,Sprint finalizacion");
+  if (tasksFile) {
+    initializeCsvFile(&csvFile);
+    addRow(&csvFile, "Sprint inicio,Tarea,Descripcion,Asignado,Fecha creacion,Fecha estimada,Fecha finalizada,Dias de atraso,Tipo,tags,Sprint finalizacion");
+  }
 
-  L_Mover_Cte(&(report->tasks), L_Primero);
+  L_Mover_Cte(&tasks, L_Primero);
   do {
-    L_Elem_Cte(report->tasks, &t);
+    L_Elem_Cte(tasks, &t);
     obtenerSprintInicio(&t, &firstSprint);
     obtenerSprintFinalizacion(&t, &lastSprint);
     getTaskTagNames(&t, &tags);
@@ -135,10 +137,11 @@ int makeCsvOutput(ProjectReport* report, char* tasksFile) {
     sprintf(buffer, "%d,%s,%s,%s,%s,%s,%s,%d,%s,%d", firstSprint, getTaskName(&t),
             getTaskNotes(&t), getTaskAssigneeName(&t), getTaskCreationDate(&t),
             getTaskDueDate(&t), getTaskCompletionDate(&t), overdueDays, tags, lastSprint);
-    addRow(&csvFile, buffer);
-  } while(L_Mover_Cte(&(report->tasks), L_Siguiente));
+    if (tasksFile) addRow(&csvFile, buffer);
+    else printf("%s\n", buffer);
+  } while(L_Mover_Cte(&tasks, L_Siguiente));
 
-  export(&csvFile, tasksFile);
+  if (tasksFile) export(&csvFile, tasksFile);
 
   free(tags);
   return destroyCsvFile(&csvFile);
@@ -319,25 +322,6 @@ int getTaskById(ProjectReport* report, char* taskId, TDA_Task *t) {
   return output;
 }
 
-void buscar_cositas(ProjectReport* report, char* key) {
-  TListaSimple cosas; char* taskId = malloc(30);
-  L_Crear(&cosas, 30);
-
-  idx_get(&(report->assigneeIndex), key, &cosas);
-
-  if(!L_Vacia(cosas)) {
-    L_Mover_Cte(&cosas, L_Primero);
-    do {
-      L_Elem_Cte(cosas, taskId);
-      printf("Me escupio task %s\n", taskId);
-    } while(L_Mover_Cte(&cosas, L_Siguiente));
-  } else {
-    printf("No se encontraron cosazas con key %s\n", key);
-  }
-
-  L_Vaciar(&cosas);
-}
-
 void hacer_cositas(ProjectReport* report) {
   printf("Recorro index por assigneee\n");
   idx_go_through(&(report->assigneeIndex), print_operate, NULL, 255);
@@ -349,21 +333,94 @@ void hacer_cositas(ProjectReport* report) {
 
 
 void getInput(ProjectReport* report) {
-  int stop = 0; size_t length; char* input = malloc(100);
-
-  while(!stop) {
-    fgets (input, 100, stdin);
-    length = strlen(input) - 1;
-    if (input[length] == '\n') input[length] = '\0'; // Remove the trailing newline
-
-    if (strcmp(input, "exit") == 0) {
-      printf("Bye\n");
-      stop = 1;
-    } else if (strcmp(input, "oppan") == 0) {
-      idx_go_through(&(report->dueDateIndex), show_due_date, report, 100);
-    } else {
-      buscar_cositas(report, input);
-    }
+  Command command;
+  pedirInstrucciones(&command);
+  while (getAction(&command) != EXIT) {
+    if (getAction(&command) == ERROR) printf("Incorrect input\n");
+    else
+      if (executeCommand(report, &command) == -1) {
+        printf("Se ha producido un error\n");
+      }
+    pedirInstrucciones(&command);
   }
+  printf("Bye\n");
+}
+
+
+int executeCommand(ProjectReport* report, Command* command) {
+  int keyCount, valueCount, i, j; FILE* file;
+  TDA_Task task; TListaSimple taskIds, tasks; T_Index* index;
+  char *key = malloc(255), *value = malloc(255), *taskId = malloc(30), *fileName = NULL;
+
+  L_Crear(&taskIds, 30); L_Crear(&tasks, sizeof(TDA_Task));
+  keyCount = getKeyCount(command);
+  valueCount = getValueCount(command);
+
+  if (getAction(command) == REPORT) {
+    fileName = malloc(255);
+    strcpy(fileName, getFileName(command));
+    file = fopen(fileName, "w");
+    if (!file) return -1;
+    fclose(file);
+  } // prepare file
+
+  for (i = 0; i < keyCount; i++) {
+    strcpy(key, getKeyByIndex(command, i));
+    if (strcmp(key, "tags") == 0) {
+      index = &(report->tagsIndex);
+    } else if (strcmp(key, "dueDate") == 0) {
+      index = &(report->dueDateIndex);
+    } else if (strcmp(key, "assignee") == 0) {
+      index = &(report->assigneeIndex);
+    } else {
+      return -1;
+    } // select index
+
+    switch (getFormat(command)) {
+      case SINGLE_VALUE:
+        strcpy(value, getValueByIndex(command, 0));
+        idx_get(index, value, &taskIds);
+        break;
+      case MULTIPLE_VALUE:
+        for (j = 0; j < valueCount; j++) {
+          strcpy(value, getValueByIndex(command, j));
+          idx_get(index, value, &taskIds);
+        }
+        break;
+      case MULTIPLE_KEY:
+        strcpy(value, getValueByIndex(command, i));
+        idx_get(index, value, &taskIds);
+        break;
+      default:
+        return -1;
+    } // switch
+
+    if(!L_Vacia(taskIds)) {
+      L_Mover_Cte(&taskIds, L_Primero);
+      do {
+        L_Elem_Cte(taskIds, taskId);
+        getTaskById(report, taskId, &task);
+        if (!L_Vacia(tasks)) {
+          L_Insertar_Cte(&tasks, L_Primero, &task);
+        } else {
+          L_Insertar_Cte(&tasks, L_Siguiente, &task);
+        }
+      } while(L_Mover_Cte(&taskIds, L_Siguiente));
+      makeOutput(tasks, fileName);
+    } else {
+      printf("No se encontraron tareas \n");
+      return -1;
+    } // process
+
+    L_Vaciar(&tasks); L_Vaciar(&taskIds);
+  }
+
+  // printf("Clave de sort %s\n", getSortKey(command));
+  // printf("Orden de sort %c\n", getSortOrder(command));
+
+  // printf("Nombre del archivo %s\n", getFileName(command));
+
+  free(value); free(key); free(fileName); free(taskId);
+  return 0;
 
 }
